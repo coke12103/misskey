@@ -98,6 +98,7 @@ export default Vue.extend({
 				&.active
 					> a
 						border-top solid 3px var(--primary)
+						line-height calc(48px - 6px)
 
 	> ul
 		display inline-block
