@@ -124,8 +124,8 @@ type Option = {
 	preview?: boolean;
 };
 
-export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
-	if (config.disablePosts) return rej({ status: 451 });
+export default async (user: IUser, data: Option, silent = false) => {
+	if (config.disablePosts) throw { status: 451 };
 
 	const isFirstNote = user.notesCount === 0;
 	const isPureRenote = data.text == null && data.poll == null && (data.files == null || data.files.length == 0);
@@ -143,28 +143,28 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	// 本文/CW/投票のハードリミット
 	// サロゲートペアは2文字扱い/合字は複数文字扱いでかける
 	if (data.text && data.text.length > 16384) {
-		return rej('text limit exceeded');
+		throw 'text limit exceeded';
 	}
 	if (data.cw && data.cw.length > 16384) {
-		return rej('cw limit exceeded');
+		throw 'cw limit exceeded';
 	}
 	if (data.poll && JSON.stringify(data.poll).length > 16384) {
-		return rej('poll limit exceeded');
+		throw 'poll limit exceeded';
 	}
 
 	// リプライ対象が削除された投稿だったらreject
 	if (data.reply && data.reply.deletedAt != null) {
-		return rej('Reply target has been deleted');
+		throw 'Reply target has been deleted';
 	}
 
 	// Renote/Quote対象が削除された投稿だったらreject
 	if (data.renote && data.renote.deletedAt != null) {
-		return rej('Renote target has been deleted');
+		throw 'Renote target has been deleted';
 	}
 
 	// Renote/Quote対象が「ホームまたは全体」以外の公開範囲ならreject
 	if (data.renote && data.renote.visibility != 'public' && data.renote.visibility != 'home') {
-		return rej('Renote target is not public or home');
+		throw 'Renote target is not public or home';
 	}
 
 	// PureRenoteの最大公開範囲はHomeにする
@@ -198,23 +198,19 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	// Parse MFM if needed
 	if (parseEmojisInToken || !tags || !emojis || !mentionedUsers) {
-		try {
-			const tokens = data.text ? parse(data.text) : [];
-			const cwTokens = data.cw ? parse(data.cw) : [];
-			const choiceTokens = data.poll && data.poll.choices
-				? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text)))
-				: [];
+		const tokens = data.text ? parse(data.text) : [];
+		const cwTokens = data.cw ? parse(data.cw) : [];
+		const choiceTokens = data.poll && data.poll.choices
+			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text)))
+			: [];
 
-			const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
+		const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
 
-			tags = data.apHashtags || extractHashtags(combinedTokens);
+		tags = data.apHashtags || extractHashtags(combinedTokens);
 
-			emojis = unique(concat([data.apEmojis || [], extractEmojis(combinedTokens)]));
+		emojis = unique(concat([data.apEmojis || [], extractEmojis(combinedTokens)]));
 
-			mentionedUsers = data.apMentions || await extractMentionedUsers(user, combinedTokens);
-		} catch (e) {
-			return rej(e);
-		}
+		mentionedUsers = data.apMentions || await extractMentionedUsers(user, combinedTokens);
 	}
 
 	tags = tags.filter(tag => Array.from(tag || '').length <= 128).splice(0, 64);
@@ -245,197 +241,195 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		}
 	}
 
-	let note: INote;
-	try {
-		note = await insertNote(user, data, tags, emojis, mentionedUsers);
-	} catch (e) {
-		return rej(e);
-	}
+	const note = await insertNote(user, data, tags, emojis, mentionedUsers);
 
-	res(note);
+	(async () => {
+		if (data.preview) return;
 
-	if (data.preview) return;
+		if (note == null) {
+			return;
+		}
 
-	if (note == null) {
-		return;
-	}
+		if (isLocalUser(user)) {
+			queueDelete(note, tags);
+		}
 
-	if (isLocalUser(user)) {
-		queueDelete(note, tags);
-	}
+		// 統計を更新
+		notesChart.update(note, true);
+		perUserNotesChart.update(user, note, true);
+		// ローカルユーザーのチャートはタイムライン取得時に更新しているのでリモートユーザーの場合だけでよい
+		if (isRemoteUser(user)) activeUsersChart.update(user);
 
-	// 統計を更新
-	notesChart.update(note, true);
-	perUserNotesChart.update(user, note, true);
-	// ローカルユーザーのチャートはタイムライン取得時に更新しているのでリモートユーザーの場合だけでよい
-	if (isRemoteUser(user)) activeUsersChart.update(user);
+		// Register host
+		if (isRemoteUser(user)) {
+			registerOrFetchInstanceDoc(user.host).then(i => {
+				Instance.update({ _id: i._id }, {
+					$inc: {
+						notesCount: 1
+					}
+				});
 
-	// Register host
-	if (isRemoteUser(user)) {
-		registerOrFetchInstanceDoc(user.host).then(i => {
-			Instance.update({ _id: i._id }, {
-				$inc: {
-					notesCount: 1
-				}
+				instanceChart.updateNote(i.host, true);
 			});
+		}
 
-			instanceChart.updateNote(i.host, true);
+		// ハッシュタグ更新
+		updateHashtags(user, tags);
+
+		// ファイルが添付されていた場合ドライブのファイルの「このファイルが添付された投稿一覧」プロパティにこの投稿を追加
+		if (data.files) {
+			for (const file of data.files) {
+				DriveFile.update({ _id: file._id }, {
+					$push: {
+						'metadata.attachedNoteIds': note._id
+					}
+				});
+			}
+		}
+
+		// Increment notes count
+		incNotesCount(user);
+
+		// Increment notes count (user)
+		incNotesCountOfUser(user);
+
+		// 未読通知を作成
+		if (data.visibility == 'specified') {
+			for (const u of data.visibleUsers) {
+				insertNoteUnread(u, note, true);
+			}
+		} else {
+			for (const u of mentionedUsers) {
+				insertNoteUnread(u, note, false);
+			}
+		}
+
+		if (data.reply) {
+			saveReply(data.reply, note);
+		}
+
+		if (data.renote) {
+			incRenoteCount(data.renote, user);
+		}
+
+		if (isQuote(note)) {
+			saveQuote(data.renote, note);
+		}
+
+		// Pack the note
+		const noteObj = await pack(note);
+
+		if (isFirstNote) {
+			noteObj.isFirstNote = true;
+		}
+
+		publishNotesStream(noteObj);
+		//publishHotStream(noteObj);
+
+		const nm = new NotificationManager(user, note);
+		const nmRelatedPromises = [];
+
+		// Extended notification
+		if (note.visibility === 'public' || note.visibility === 'home' || note.visibility === 'followers') {
+			nmRelatedPromises.push(notifyExtended(note, nm));
+		}
+
+		// If has in reply to note
+		if (data.reply) {
+			// Fetch watchers
+			nmRelatedPromises.push(notifyToWatchersOfReplyee(data.reply, user, nm));
+
+			// この投稿をWatchする
+			if (isLocalUser(user) && user.settings.autoWatch !== false) {
+				watch(user._id, data.reply);
+			}
+
+			// 通知
+			if (isLocalUser(data.reply._user)) {
+				nm.push(data.reply.userId, 'reply');
+				publishMainStream(data.reply.userId, 'reply', noteObj);
+			}
+		}
+
+		// mention
+		await createMentionedEvents(mentionedUsers, note, nm);
+
+		// If it is renote
+		if (data.renote) {
+			const type = data.text ? 'quote' : 'renote';
+
+			// Notify
+			if (isLocalUser(data.renote._user)) {
+				nm.push(data.renote.userId, type);
+			}
+
+			// Fetch watchers
+			nmRelatedPromises.push(notifyToWatchersOfRenotee(data.renote, user, nm, type));
+
+			// この投稿をWatchする
+			if (isLocalUser(user) && user.settings.autoWatch !== false) {
+				watch(user._id, data.renote);
+			}
+
+			// Publish event
+			if (!user._id.equals(data.renote.userId) && isLocalUser(data.renote._user)) {
+				publishMainStream(data.renote.userId, 'renote', noteObj);
+			}
+		}
+
+		Promise.all(nmRelatedPromises).then(() => {
+			nm.deliver();
 		});
-	}
 
-	// ハッシュタグ更新
-	updateHashtags(user, tags);
+		// AP deliver
+		if (isLocalUser(user)) {
+			(async () => {
+				const noteActivity = await renderNoteOrRenoteActivity(data, note, user);
+				const dm = new DeliverManager(user, noteActivity);
 
-	// ファイルが添付されていた場合ドライブのファイルの「このファイルが添付された投稿一覧」プロパティにこの投稿を追加
-	if (data.files) {
-		for (const file of data.files) {
-			DriveFile.update({ _id: file._id }, {
-				$push: {
-					'metadata.attachedNoteIds': note._id
-				}
-			});
-		}
-	}
-
-	// Increment notes count
-	incNotesCount(user);
-
-	// Increment notes count (user)
-	incNotesCountOfUser(user);
-
-	// 未読通知を作成
-	if (data.visibility == 'specified') {
-		for (const u of data.visibleUsers) {
-			insertNoteUnread(u, note, true);
-		}
-	} else {
-		for (const u of mentionedUsers) {
-			insertNoteUnread(u, note, false);
-		}
-	}
-
-	if (data.reply) {
-		saveReply(data.reply, note);
-	}
-
-	if (data.renote) {
-		incRenoteCount(data.renote, user);
-	}
-
-	if (isQuote(note)) {
-		saveQuote(data.renote, note);
-	}
-
-	// Pack the note
-	const noteObj = await pack(note);
-
-	if (isFirstNote) {
-		noteObj.isFirstNote = true;
-	}
-
-	publishNotesStream(noteObj);
-	//publishHotStream(noteObj);
-
-	const nm = new NotificationManager(user, note);
-	const nmRelatedPromises = [];
-
-	// Extended notification
-	if (note.visibility === 'public' || note.visibility === 'home' || note.visibility === 'followers') {
-		nmRelatedPromises.push(notifyExtended(note, nm));
-	}
-
-	// If has in reply to note
-	if (data.reply) {
-		// Fetch watchers
-		nmRelatedPromises.push(notifyToWatchersOfReplyee(data.reply, user, nm));
-
-		// この投稿をWatchする
-		if (isLocalUser(user) && user.settings.autoWatch !== false) {
-			watch(user._id, data.reply);
-		}
-
-		// 通知
-		if (isLocalUser(data.reply._user)) {
-			nm.push(data.reply.userId, 'reply');
-			publishMainStream(data.reply.userId, 'reply', noteObj);
-		}
-	}
-
-	// mention
-	await createMentionedEvents(mentionedUsers, note, nm);
-
-	// If it is renote
-	if (data.renote) {
-		const type = data.text ? 'quote' : 'renote';
-
-		// Notify
-		if (isLocalUser(data.renote._user)) {
-			nm.push(data.renote.userId, type);
-		}
-
-		// Fetch watchers
-		nmRelatedPromises.push(notifyToWatchersOfRenotee(data.renote, user, nm, type));
-
-		// この投稿をWatchする
-		if (isLocalUser(user) && user.settings.autoWatch !== false) {
-			watch(user._id, data.renote);
-		}
-
-		// Publish event
-		if (!user._id.equals(data.renote.userId) && isLocalUser(data.renote._user)) {
-			publishMainStream(data.renote.userId, 'renote', noteObj);
-		}
-	}
-
-	Promise.all(nmRelatedPromises).then(() => {
-		nm.deliver();
-	});
-
-	// AP deliver
-	if (isLocalUser(user)) {
-		(async () => {
-			const noteActivity = await renderNoteOrRenoteActivity(data, note, user);
-			const dm = new DeliverManager(user, noteActivity);
-
-			// メンションされたリモートユーザーに配送
-			for (const u of mentionedUsers.filter(u => isRemoteUser(u))) {
-				dm.addDirectRecipe(u as IRemoteUser);
-			}
-
-			if (!silent) {
-				// 投稿がリプライかつ投稿者がローカルユーザーかつリプライ先の投稿の投稿者がリモートユーザーなら配送
-				if (data.reply && isRemoteUser(data.reply._user)) {
-					dm.addDirectRecipe(data.reply._user);
+				// メンションされたリモートユーザーに配送
+				for (const u of mentionedUsers.filter(u => isRemoteUser(u))) {
+					dm.addDirectRecipe(u as IRemoteUser);
 				}
 
-				// 投稿がRenoteかつ投稿者がローカルユーザーかつRenote元の投稿の投稿者がリモートユーザーなら配送
-				if (data.renote && isRemoteUser(data.renote._user)) {
-					dm.addDirectRecipe(data.renote._user);
+				if (!silent) {
+					// 投稿がリプライかつ投稿者がローカルユーザーかつリプライ先の投稿の投稿者がリモートユーザーなら配送
+					if (data.reply && isRemoteUser(data.reply._user)) {
+						dm.addDirectRecipe(data.reply._user);
+					}
+
+					// 投稿がRenoteかつ投稿者がローカルユーザーかつRenote元の投稿の投稿者がリモートユーザーなら配送
+					if (data.renote && isRemoteUser(data.renote._user)) {
+						dm.addDirectRecipe(data.renote._user);
+					}
+
+					// フォロワーへ配送
+					if (['public', 'home', 'followers'].includes(note.visibility)) {
+						dm.addFollowersRecipe();
+					}
+
+					// リレーへ配送
+					if (['public'].includes(note.visibility) && !note.copyOnce) {
+						deliverToRelays(user, noteActivity);
+					}
+
+					// リモートのみ配送
+					if (note.visibility === 'specified' && note.copyOnce) {
+						dm.addFollowersRecipe();
+					}
 				}
 
-				// フォロワーへ配送
-				if (['public', 'home', 'followers'].includes(note.visibility)) {
-					dm.addFollowersRecipe();
-				}
+				dm.execute();
+			})();
+		}
 
-				// リレーへ配送
-				if (['public'].includes(note.visibility) && !note.copyOnce) {
-					deliverToRelays(user, noteActivity);
-				}
+		// Register to search database
+		index(note);
 
-				// リモートのみ配送
-				if (note.visibility === 'specified' && note.copyOnce) {
-					dm.addFollowersRecipe();
-				}
-			}
+	})();
 
-			dm.execute();
-		})();
-	}
-
-	// Register to search database
-	index(note);
-});
+	return note;
+};
 
 async function queueDelete(note: INote, tags: string[]) {
 	for (const tag of tags) {
