@@ -2,18 +2,11 @@
 <div class="account" v-hotkey.global="keymap">
 	<button class="header" :data-active="isOpen" @click="toggle">
 		<span class="username">{{ $store.state.i.username }}
-			<template v-if="!isOpen">
-				<fa v-if="navbar == 'bottom'" icon="angle-up"/>
-				<fa v-if="navbar == 'top'" icon="angle-down"/>
-			</template>
-			<template v-if="isOpen">
-				<fa v-if="navbar == 'top'" icon="angle-up"/>
-				<fa v-if="navbar == 'bottom'" icon="angle-down"/>
-			</template>
+			<fa :icon="xor(isOpen, navbar === 'bottom') ? 'angle-up' : 'angle-down'"/>
 		</span>
 		<mk-avatar class="avatar" :user="$store.state.i"/>
 	</button>
-	<transition name="zoom-in-top">
+	<transition :name="navbar === 'top' ? 'zoom-in-top' : 'zoom-in-bottom'">
 		<div class="menu" :class="navbar" v-if="isOpen">
 			<ul>
 				<li @click="closeMenu">
@@ -198,6 +191,9 @@ export default Vue.extend({
 		toggleDeckMode() {
 			this.$store.commit('device/set', { key: 'deckMode', value: !this.$store.state.device.inDeckMode });
 			location.replace('/');
+		},
+		xor(a: boolean, b: boolean): boolean {
+			return (a || b) && !(a && b);
 		},
 	}
 });
