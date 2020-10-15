@@ -96,6 +96,10 @@ export default define(meta, async (ps, user) => {
 		const type = await toDbReactionNoResolve(ps.type);
 		//console.log(`${ps.type} => ${type}`);
 		query.reaction = type;
+
+		if (query.reaction === '🍮' || query.reaction === 'pudding') {
+			query.reaction = { $in: [ '🍮', 'pudding' ] };
+		}
 	}
 
 	const reactions = await NoteReaction.find(query, {

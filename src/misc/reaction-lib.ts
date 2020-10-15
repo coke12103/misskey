@@ -146,6 +146,10 @@ export function decodeReaction(str: string) {
 export function decodeReactionCounts(reactions: Record<string, number>) {
 	const _reactions = {} as Record<string, number>;
 
+	if (reactions['🍮'] && reactions['pudding']) {
+		reactions['🍮'] = reactions['🍮'] + reactions['pudding'];
+	}
+
 	for (const reaction of Object.keys(reactions)) {
 		if (reactions[reaction] <= 0) continue;
 		_reactions[decodeReaction(reaction)] = reactions[reaction];

@@ -111,8 +111,6 @@ themeColor: '#fb4e4e'
 #  mecabBin: mecab
 #  # mecab辞書 (オプション)
 #  mecabDic: /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd
-#  # リモートのmecabサーバーを使う場合は以下を指定
-#  #mecabServer: http://127.0.0.1:3062/
 
 # Elasticsearch
 #elasticsearch:
@@ -157,3 +155,7 @@ themeColor: '#fb4e4e'
 #proxySmtp: http://127.0.0.1:3128   # use HTTP/1.1 CONNECT
 #proxySmtp: socks4://127.0.0.1:1080 # use SOCKS4
 #proxySmtp: socks5://127.0.0.1:1080 # use SOCKS5
+
+# サーバーからのリモートリクエストにHTTP/2を使用する (default: false)
+# ActivityPubのPOST, signToActivityPubGet指定時のActivityPubのGET および proxy指定時には効きません
+#useClientHttp2: true

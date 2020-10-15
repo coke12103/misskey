@@ -58,10 +58,10 @@ export default async function(ctx: Router.RouterContext) {
 			});
 		};
 
-		if (typeof e == 'number' && e >= 400 && e < 500) {
+		if (typeof e.statusCode == 'number' && e.statusCode >= 400 && e.statusCode < 500) {
 			// 4xx
 			defered();
-			ctx.status = e;
+			ctx.status = e.statusCode;
 			ctx.set('Cache-Control', 'max-age=86400');
 		} else if (typeof e == 'number') {
 			// other status code
