@@ -23,6 +23,19 @@ import config from '../../config';
 // Init app
 const app = new Koa();
 
+// Handle error
+app.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		if (err.code === 'LIMIT_FILE_SIZE') {
+			ctx.throw('File to large', 413);
+			return;
+		}
+		ctx.app.emit('error', err, ctx);
+	}
+});
+
 app.use(cors({
 	origin: '*'
 }));
@@ -40,7 +53,11 @@ app.use(bodyParser({
 
 // Init multer instance
 const upload = multer({
-	storage: multer.diskStorage({})
+	storage: multer.diskStorage({}),
+	limits: {
+		fileSize: config.maxFileSize || 262144000,
+		files: 1,
+	}
 });
 
 // Init router

@@ -75,6 +75,15 @@ export default Vue.extend({
 			const xhr = new XMLHttpRequest();
 			xhr.open('POST', apiUrl + '/drive/files/create', true);
 			xhr.onload = (e: any) => {
+				if (xhr.status !== 200) {
+					this.uploads = (this.uploads as any[]).filter(x => x.id !== id);
+					this.$root.dialog({
+						type: 'error',
+						text: xhr.status === 413 ? `File to large` : `${xhr.status} ${xhr.statusText}`
+					});
+					return;
+				}
+
 				const driveFile = JSON.parse(e.target.response);
 
 				this.$emit('uploaded', driveFile);

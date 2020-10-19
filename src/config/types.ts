@@ -45,7 +45,7 @@ export type Source = {
 
 	proxyProxy?: string;
 
-	useClientHttp2?: string;
+	maxFileSize?: number;
 
 	accesslog?: string;
 
