@@ -27,6 +27,7 @@
 					<ul>
 						<li><router-link to="/i/widgets" :data-active="$route.name == 'widgets'"><i><fa :icon="['far', 'calendar-alt']" fixed-width/></i>{{ $t('widgets') }}<i><fa icon="angle-right"/></i></router-link></li>
 						<li><router-link to="/i/favorites" :data-active="$route.name == 'favorites'"><i><fa icon="star" fixed-width/></i>{{ $t('@.favorites') }}<i><fa icon="angle-right"/></i></router-link></li>
+						<li><router-link to="/i/reactions" :data-active="$route.name == 'reactions'"><i><fa :icon="faThumbsUp" fixed-width/></i>{{ $t('@.noteReactions') }}<i><fa icon="angle-right"/></i></router-link></li>
 						<li><router-link to="/i/lists" :data-active="$route.name == 'user-lists'"><i><fa icon="list" fixed-width/></i>{{ $t('user-lists') }}<i><fa icon="angle-right"/></i></router-link></li>
 						<li><router-link to="/i/drive" :data-active="$route.name == 'drive'"><i><fa icon="cloud" fixed-width/></i>{{ $t('@.drive') }}<i><fa icon="angle-right"/></i></router-link></li>
 						<li><router-link to="/i/pages" :data-active="$route.name == 'pages'"><i><fa :icon="faStickyNote" fixed-width/></i>{{ $t('@.pages') }}<i><fa icon="angle-right"/></i></router-link></li>
@@ -72,7 +73,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faNewspaper, faHashtag, faHome, faColumns, faSync, faDesktop, faMobileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faHashtag, faHome, faColumns, faSync, faDesktop, faMobileAlt, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { faMoon, faSun, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
@@ -92,7 +93,7 @@ export default Vue.extend({
 			announcements: [],
 			searching: false,
 			showNotifications: false,
-			faNewspaper, faHashtag, faMoon, faSun, faHome, faColumns, faSync, faDesktop, faMobileAlt, faStickyNote
+			faNewspaper, faHashtag, faMoon, faSun, faHome, faColumns, faSync, faDesktop, faMobileAlt, faStickyNote, faThumbsUp
 		};
 	},
 

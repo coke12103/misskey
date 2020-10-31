@@ -44,6 +44,9 @@
 			<div :title="$t('@.favorites')">
 				<router-link to="/i/favorites"><fa icon="star"/></router-link>
 			</div>
+			<div :title="$t('@.noteReactions')">
+				<router-link to="/i/reactions"><fa :icon="faThumbsUp"/></router-link>
+			</div>
 			<div :title="$t('@.follow-requests')">
 				<a @click="followRequests"><fa :icon="['far', 'envelope']"/><i v-if="$store.state.i.pendingReceivedFollowRequestsCount">{{ $store.state.i.pendingReceivedFollowRequestsCount }}</i></a>
 			</div>
@@ -78,7 +81,7 @@ import MkDriveWindow from './drive-window.vue';
 import MkMessagingWindow from './messaging-window.vue';
 import MkGameWindow from './game-window.vue';
 import contains from '../../../common/scripts/contains';
-import { faNewspaper, faHashtag, faStickyNote, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faHashtag, faStickyNote, faDoorOpen, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/ui.sidebar.vue'),
@@ -88,7 +91,7 @@ export default Vue.extend({
 			connection: null,
 			showNotifications: false,
 			searching: false,
-			faNewspaper, faHashtag, faStickyNote, faDoorOpen
+			faNewspaper, faHashtag, faStickyNote, faDoorOpen, faThumbsUp
 		};
 	},
 

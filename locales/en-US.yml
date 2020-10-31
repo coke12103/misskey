@@ -88,6 +88,7 @@ common:
   desktop-mode: 'Desktop mode'
   mobile-mode: 'Mobile mode'
   favorites: "Favorites"
+  noteReactions: "Reacted notes"
   permissions:
     "read:account": "View your account information"
     "write:account": "Edit your account information"

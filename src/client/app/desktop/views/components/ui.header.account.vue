@@ -30,6 +30,13 @@
 						<i><fa icon="angle-right"/></i>
 					</router-link>
 				</li>
+				<li @click="closeMenu">
+					<router-link to="/i/reactions">
+						<i><fa :icon="faThumbsUp" fixed-width/></i>
+						<span>{{ $t('@.noteReactions') }}</span>
+						<i><fa icon="angle-right"/></i>
+					</router-link>
+				</li>
 				<li @click="list">
 					<p>
 						<i><fa icon="list" fixed-width/></i>
@@ -115,7 +122,7 @@ import MkUserListsWindow from './user-lists-window.vue';
 import MkFollowRequestsWindow from './received-follow-requests-window.vue';
 import MkDriveWindow from './drive-window.vue';
 import contains from '../../../common/scripts/contains';
-import { faHome, faColumns, faUsers, faDoorOpen, faDesktop, faMobileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faColumns, faUsers, faDoorOpen, faDesktop, faMobileAlt, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { faMoon, faSun, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
@@ -123,7 +130,7 @@ export default Vue.extend({
 	data() {
 		return {
 			isOpen: false,
-			faHome, faColumns, faMoon, faSun, faStickyNote, faUsers, faDoorOpen, faDesktop, faMobileAlt
+			faHome, faColumns, faMoon, faSun, faStickyNote, faUsers, faDoorOpen, faDesktop, faMobileAlt, faThumbsUp
 		};
 	},
 	computed: {

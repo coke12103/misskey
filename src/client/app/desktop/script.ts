@@ -145,6 +145,7 @@ init(async (launch, os) => {
 					{ path: '/explore', name: 'explore', component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
 					{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
 					{ path: '/i/favorites', component: () => import('../common/views/deck/deck.favorites-column.vue').then(m => m.default) },
+					{ path: '/i/reactions', component: () => import('../common/views/deck/deck.reactions-column.vue').then(m => m.default) },
 					{ path: '/i/pages', component: () => import('../common/views/pages/pages.vue').then(m => m.default) },
 					{ path: '/@:username/pages/:pageName', name: 'page', props: true, component: () => import('../common/views/deck/deck.page-column.vue').then(m => m.default) },
 				]}
@@ -162,6 +163,7 @@ init(async (launch, os) => {
 					{ path: '/explore', name: 'explore', component: () => import('../common/views/pages/explore.vue').then(m => m.default) },
 					{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('../common/views/pages/explore.vue').then(m => m.default) },
 					{ path: '/i/favorites', component: () => import('./views/home/favorites.vue').then(m => m.default) },
+					{ path: '/i/reactions', component: () => import('./views/home/reactions.vue').then(m => m.default) },
 					{ path: '/i/pages', component: () => import('../common/views/pages/pages.vue').then(m => m.default) },
 					{ path: '/i/pages/new', component: () => import('../common/views/pages/page-editor/page-editor.vue').then(m => m.default) },
 					{ path: '/i/pages/edit/:pageId', component: () => import('../common/views/pages/page-editor/page-editor.vue').then(m => m.default), props: route => ({ initPageId: route.params.pageId }) },

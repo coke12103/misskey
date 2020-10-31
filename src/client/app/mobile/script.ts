@@ -22,6 +22,7 @@ import MkReceivedFollowRequests from './views/pages/received-follow-requests.vue
 import MkNote from './views/pages/note.vue';
 import MkSearch from './views/pages/search.vue';
 import MkFavorites from './views/pages/favorites.vue';
+import MkReactions from './views/pages/reactions.vue';
 import MkUserLists from './views/pages/user-lists.vue';
 import MkUserList from './views/pages/user-list.vue';
 import MkReversi from './views/pages/games/reversi.vue';
@@ -133,6 +134,7 @@ init((launch, os) => {
 					{ path: '/explore', name: 'explore', component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
 					{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
 					{ path: '/i/favorites', component: () => import('../common/views/deck/deck.favorites-column.vue').then(m => m.default) },
+					{ path: '/i/reactions', component: () => import('../common/views/deck/deck.reactions-column.vue').then(m => m.default) },
 					{ path: '/i/pages', name: 'pages', component: () => import('../common/views/pages/pages.vue').then(m => m.default) },
 					{ path: '/@:username/pages/:pageName', name: 'page', props: true, component: () => import('../common/views/deck/deck.page-column.vue').then(m => m.default) },
 				]}]
@@ -143,6 +145,7 @@ init((launch, os) => {
 			{ path: '/i/settings', name: 'settings', component: () => import('./views/pages/settings.vue').then(m => m.default) },
 			{ path: '/i/settings/:page', redirect: '/i/settings' },
 			{ path: '/i/favorites', name: 'favorites', component: MkFavorites },
+			{ path: '/i/reactions', name: 'reactions', component: MkReactions },
 			{ path: '/i/pages', name: 'pages', component: UI, props: route => ({ component: () => import('../common/views/pages/pages.vue').then(m => m.default) }) },
 			{ path: '/i/lists', name: 'user-lists', component: MkUserLists },
 			{ path: '/i/lists/:list', name: 'user-list', component: MkUserList },

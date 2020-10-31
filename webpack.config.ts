@@ -74,7 +74,9 @@ module.exports = {
 				}, {
 					loader: 'css-loader',
 					options: {
-						modules: true
+						modules: true,
+						esModule: false,
+						url: false,
 					}
 				}, postcss, {
 					loader: 'stylus-loader'
@@ -83,7 +85,11 @@ module.exports = {
 				use: [{
 					loader: 'vue-style-loader'
 				}, {
-					loader: 'css-loader'
+					loader: 'css-loader',
+					options: {
+						url: false,
+						esModule: false
+					}
 				}, postcss, {
 					loader: 'stylus-loader'
 				}]
@@ -93,7 +99,10 @@ module.exports = {
 			use: [{
 				loader: 'vue-style-loader'
 			}, {
-				loader: 'css-loader'
+				loader: 'css-loader',
+				options: {
+					esModule: false,
+				}
 			}, postcss]
 		}, {
 			test: /\.(eot|woff|woff2|svg|ttf)([?]?.*)$/,
@@ -138,8 +147,7 @@ module.exports = {
 			for (const [lang, locale] of Object.entries(locales))
 				fs.writeFileSync(`./built/client/assets/locales/${lang}.json`, JSON.stringify(locale), 'utf-8');
 		}),
-		new VueLoaderPlugin(),
-		new webpack.optimize.ModuleConcatenationPlugin()
+		new VueLoaderPlugin()
 	],
 	output: {
 		path: __dirname + '/built/client/assets',
@@ -152,6 +160,9 @@ module.exports = {
 		],
 		alias: {
 			'const.styl': __dirname + '/src/client/const.styl'
+		},
+		fallback: {
+			'crypto': false
 		}
 	},
 	resolveLoader: {
