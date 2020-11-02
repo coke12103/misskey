@@ -65,7 +65,7 @@
 				</div>
 			</div>
 		</header>
-		<nav v-if="$route.name == 'user'">
+		<nav v-if="$route.name == 'user'" :class="mobileNavbar">
 			<div class="nav-container">
 				<a :data-active="page == 'home'" @click="page = 'home'"><fa icon="home"/> {{ $t('overview') }}</a>
 				<a :data-active="page == 'notes'" @click="page = 'notes'"><fa :icon="['far', 'comment-alt']"/> {{ $t('timeline') }}</a>
@@ -112,6 +112,10 @@ export default Vue.extend({
 		};
 	},
 	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
+
 		age(): number {
 			return age(this.user.profile.birthday);
 		},
@@ -371,9 +375,14 @@ export default Vue.extend({
 					color var(--text)
 
 	> nav
+		&.top
+			top 47px
+
+		&.bottom
+			top 0px
+
 		position -webkit-sticky
 		position sticky
-		top 47px
 		background-color $bg
 		z-index 2
 		box-shadow 0 4px 4px var(--mobileUserPageHeaderShadow)

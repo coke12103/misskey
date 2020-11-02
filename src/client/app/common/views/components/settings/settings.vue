@@ -32,6 +32,11 @@
 				<ui-radio v-model="navbar" value="left">{{ $t('@._settings.navbar-position-left') }}</ui-radio>
 				<ui-radio v-model="navbar" value="right">{{ $t('@._settings.navbar-position-right') }}</ui-radio>
 			</section>
+			<section v-if="$root.isMobile">
+				<header>{{ $t('@._settings.navbar-position') }}</header>
+				<ui-radio v-model="mobileNavbar" value="top">{{ $t('@._settings.navbar-position-top') }}</ui-radio>
+				<ui-radio v-model="mobileNavbar" value="bottom">{{ $t('@._settings.navbar-position-bottom') }}</ui-radio>
+			</section>
 			<section>
 				<ui-switch v-model="circleIcons">{{ $t('@._settings.circle-icons') }}</ui-switch>
 				<ui-switch v-model="reduceMotion">{{ $t('@._settings.reduce-motion') }}</ui-switch>
@@ -382,6 +387,11 @@ export default Vue.extend({
 		navbar: {
 			get() { return this.$store.state.device.navbar; },
 			set(value) { this.$store.commit('device/set', { key: 'navbar', value }); }
+		},
+
+		mobileNavbar: {
+			get() { return this.$store.state.device.mobileNavbar; },
+			set(value) { this.$store.commit('device/set', { key: 'mobileNavbar', value }); }
 		},
 
 		deckColumnAlign: {

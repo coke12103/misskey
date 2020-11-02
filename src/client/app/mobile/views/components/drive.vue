@@ -91,6 +91,10 @@ export default Vue.extend({
 		};
 	},
 	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
+
 		isFileSelectMode(): boolean {
 			return this.selectFile;
 		}
@@ -98,7 +102,11 @@ export default Vue.extend({
 	watch: {
 		top() {
 			if (this.isNaked) {
-				(this.$refs.nav as any).style.top = `${this.top}px`;
+				if(this.mobileNavbar == 'bottom') {
+					(this.$refs.nav as any).style.top = `0px`;
+				}else{
+					(this.$refs.nav as any).style.top = `${this.top}px`;
+				}
 			}
 		}
 	},
@@ -120,7 +128,11 @@ export default Vue.extend({
 		}
 
 		if (this.isNaked) {
-			(this.$refs.nav as any).style.top = `${this.top}px`;
+			if(this.mobileNavbar == 'bottom') {
+				(this.$refs.nav as any).style.top = `0px`;
+			}else{
+				(this.$refs.nav as any).style.top = `${this.top}px`;
+			}
 		}
 	},
 	beforeDestroy() {

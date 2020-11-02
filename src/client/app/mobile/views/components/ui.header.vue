@@ -1,5 +1,5 @@
 <template>
-<div class="header" ref="root">
+<div class="header" :class="mobileNavbar"  ref="root">
 	<div class="main" ref="main">
 		<div class="backdrop"></div>
 		<div class="content" ref="mainContainer">
@@ -30,6 +30,12 @@ export default Vue.extend({
 		};
 	},
 
+	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
+	},
+
 	mounted() {
 		this.$store.commit('setUiHeaderHeight', 48);
 	},
@@ -39,14 +45,46 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .header
 	$height = 48px
-
 	position fixed
-	top 0
 	left -8px
 	z-index 1024
 	width calc(100% + 16px)
 	padding 0 8px
 	box-shadow 0 0px 8px rgba(0, 0, 0, 0.25)
+
+	&.top
+		top 0
+
+	&.top > .main
+		> .backdrop
+			top 0
+
+		> .content
+			> .nav
+				top 0
+
+			> i.circle
+				top 8px
+
+			> button:last-child
+				top 0
+
+	&.bottom
+		bottom 0
+
+	&.bottom > .main
+		> .backdrop
+			bottom 0
+
+		> .content
+			> .nav
+				bottom 0
+
+			> i.circle
+				bottom 8px
+
+			> button:last-child
+				bottom 0
 
 	&, *
 		user-select none
@@ -69,7 +107,6 @@ export default Vue.extend({
 
 		> .backdrop
 			position absolute
-			top 0
 			z-index 1000
 			width 100%
 			height $height
@@ -105,7 +142,6 @@ export default Vue.extend({
 			> .nav
 				display block
 				position absolute
-				top 0
 				left 0
 				padding 0
 				width $height
@@ -118,7 +154,6 @@ export default Vue.extend({
 
 			> i.circle
 				position absolute
-				top 8px
 				left 8px
 				pointer-events none
 				font-size 10px
@@ -127,7 +162,6 @@ export default Vue.extend({
 			> button:last-child
 				display block
 				position absolute
-				top 0
 				right 0
 				padding 0
 				width $height

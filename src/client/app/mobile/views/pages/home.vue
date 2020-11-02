@@ -15,8 +15,7 @@
 				<span v-if="src == 'tag'"><fa icon="hashtag"/>{{ tagTl.title }}</span>
 			</span>
 			<span style="margin-left:8px">
-				<template v-if="!showNav"><fa icon="angle-down"/></template>
-				<template v-else><fa icon="angle-up"/></template>
+				<fa :icon="xor(showNav, mobileNavbar === 'bottom') ? 'angle-up' : 'angle-down'"/>
 			</span>
 			<i :class="$style.badge" v-if="$store.state.i.hasUnreadMentions || $store.state.i.hasUnreadSpecifiedNotes"><fa icon="circle"/></i>
 		</span>
@@ -27,7 +26,7 @@
 	</template>
 
 	<main>
-		<div class="nav" v-if="showNav">
+		<div class="nav" :class="mobileNavbar" v-if="showNav">
 			<div class="bg" @click="showNav = false"></div>
 			<div class="pointer"></div>
 			<div class="body">
@@ -94,6 +93,12 @@ export default Vue.extend({
 			enableGlobalTimeline: false,
 			faThumbsUp
 		};
+	},
+
+	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
 	},
 
 	watch: {
@@ -169,7 +174,11 @@ export default Vue.extend({
 
 		warp() {
 
-		}
+		},
+
+		xor(a: boolean, b: boolean): boolean {
+			return (a || b) && !(a && b);
+		},
 	}
 });
 </script>
@@ -177,25 +186,49 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 main
 	> .nav
+		&.top
+			> .body
+				top 56px
+
+			> .pointer
+				$size = 16px
+				top 56px
+
+				&:after
+					top -($size * 2)
+					border-top solid $size transparent
+					border-bottom solid $size var(--popupBg)
+
+		&.bottom
+			> .body
+				bottom 56px
+
+			> .pointer
+				$size = 16px
+				bottom 56px
+
+				&:after
+					bottom -($size * 2)
+					border-top solid $size var(--popupBg)
+					border-bottom solid $size transparent
+
 		> .pointer
+			$size = 16px
 			position fixed
 			z-index 10002
-			top 56px
 			left 0
 			right 0
 
-			$size = 16px
 
 			&:after
 				content ""
 				display block
 				position absolute
-				top -($size * 2)
 				left s('calc(50% - %s)', $size)
 				border-top solid $size transparent
 				border-left solid $size transparent
 				border-right solid $size transparent
-				border-bottom solid $size var(--popupBg)
+				border-bottom solid $size transparent
 
 		> .bg
 			position fixed
@@ -209,7 +242,6 @@ main
 		> .body
 			position fixed
 			z-index 10001
-			top 56px
 			left 0
 			right 0
 			width 300px

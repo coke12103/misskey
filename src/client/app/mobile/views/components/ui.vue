@@ -1,5 +1,5 @@
 <template>
-<div class="mk-ui" :class="{ deck: $store.state.device.inDeckMode }">
+<div class="mk-ui" :class="[{ deck: $store.state.device.inDeckMode }, mobileNavbar ]">
 	<x-header v-if="!$store.state.device.inDeckMode">
 		<template #func><slot name="func"></slot></template>
 		<slot name="header"></slot>
@@ -37,6 +37,10 @@ export default Vue.extend({
 	},
 
 	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
+
 		hasUnreadNotification(): boolean {
 			return this.$store.getters.isSignedIn && this.$store.state.i.hasUnreadNotification;
 		},
@@ -52,12 +56,30 @@ export default Vue.extend({
 
 	watch: {
 		'$store.state.uiHeaderHeight'() {
-			this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+			if(this.mobileNavbar == 'bottom') {
+				this.$el.style.paddingTop = '0px';
+				this.$el.style.paddingBottom = this.$store.state.uiHeaderHeight + 'px';
+			}else if(this.mobileNavbar == 'top'){
+				this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+				this.$el.style.paddingBottom = '0px';
+			}else{
+				this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+				this.$el.style.paddingBottom = this.$store.state.uiHeaderHeight + 'px';
+			}
 		}
 	},
 
 	mounted() {
-		this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+		if(this.mobileNavbar == 'bottom') {
+			this.$el.style.paddingTop = '0px';
+			this.$el.style.paddingBottom = this.$store.state.uiHeaderHeight + 'px';
+		}else if(this.mobileNavbar == 'top'){
+			this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+			this.$el.style.paddingBottom = '0px';
+		}else{
+			this.$el.style.paddingTop = this.$store.state.uiHeaderHeight + 'px';
+			this.$el.style.paddingBottom = this.$store.state.uiHeaderHeight + 'px';
+		}
 
 		if (this.$store.getters.isSignedIn) {
 			this.connection = this.$root.stream.useSharedConnection('main');
@@ -99,8 +121,11 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .mk-ui
-	&:not(.deck)
+	&.top:not(.deck)
 		padding-top 48px
+
+	&.bottom:not(.deck)
+		padding-bottom 48px
 
 	> .button
 		position fixed
