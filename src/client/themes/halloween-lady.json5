@@ -1,16 +1,15 @@
 {
-	id: 'promo',
-	revision: 6,
+	id: '0f527c35-7100-424e-8fb0-940fe313e843',
 
-	name: 'エレガントなお嬢様',
+	name: 'ハロウィンなお嬢様',
 	author: 'めいめい',
-	desc: 'エレガントなお嬢様のためのテーマなのだわ',
+	desc: 'ハロウィンなお嬢様のためのテーマなのだわ',
 
 	base: 'dark',
 
 	vars: {
-		primary: 'rgb(24, 192, 24)',
-		secondary: 'rgb(128, 0, 0)',
+		primary: 'rgb(24, 128, 24)',
+		secondary: 'rgb(192, 64, 0)',
 		text: 'rgb(255, 251, 185)',
 	},
 
