@@ -291,3 +291,8 @@ main
 	vertical-align middle
 
 </style>
+
+<style v-if="mobileNavbar === 'bottom'" lang="stylus">
+#wait
+	bottom: 15+48px
+</style>

@@ -17,7 +17,7 @@
 			</p>
 		</template>
 	</div>
-	<footer>
+	<footer :class="mobileNavbar">
 		<transition name="fade">
 			<div class="new-message" v-show="showIndicator">
 				<button @click="onIndicatorClick"><i><fa :icon="faArrowCircleDown"/></i>{{ $t('new-message') }}</button>
@@ -59,6 +59,10 @@ export default Vue.extend({
 	},
 
 	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
+
 		_messages(): any[] {
 			return (this.messages as any).map(message => {
 				const date = new Date(message.createdAt).getDate();
@@ -354,10 +358,15 @@ export default Vue.extend({
 				background var(--messagingRoomBg)
 
 	> footer
+		&.top
+			bottom 0
+
+		&.bottom
+			bottom 48px
+
 		position -webkit-sticky
 		position sticky
 		z-index 2
-		bottom 0
 		width 100%
 		max-width 600px
 		margin 0 auto

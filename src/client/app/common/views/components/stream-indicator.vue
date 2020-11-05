@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="mobileNavbar">
 	<div class="disconnect-notify" v-if="stream.state == 'connected' && hasDisconnected" @click="resetDisconnected">
 		<div><fa icon="exclamation-triangle"/> {{ $t('has-disconnected') }} ({{ disconnectedTime }})</div>
 		<div v-if="newVersion != null">
@@ -47,6 +47,9 @@ export default Vue.extend({
 		}
 	},
 	computed: {
+		mobileNavbar(): string {
+			return this.$store.state.device.mobileNavbar;
+		},
 		stream() {
 			return this.$root.stream;
 		},
@@ -117,10 +120,19 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
+&.top
+	.disconnect-notify
+	.mk-stream-indicator
+		bottom 8px
+
+&.bottom
+	.disconnect-notify
+	.mk-stream-indicator
+		bottom 48+8px
+
 .disconnect-notify
 	position fixed
 	z-index 16385
-	bottom 8px
 	right 8px
 	margin 0
 	padding 6px 12px
@@ -145,7 +157,6 @@ export default Vue.extend({
 	pointer-events none
 	position fixed
 	z-index 16384
-	bottom 8px
 	right 8px
 	margin 0
 	padding 6px 12px
