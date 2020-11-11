@@ -108,6 +108,16 @@
 					<ui-button @click="previewReaction()" ref="reactionsPreviewButton"><fa :icon="faEye"/> {{ $t('@._settings.preview') }}</ui-button>
 					<ui-button @click="save('reactions', splitedReactions)" primary><fa :icon="faSave"/> {{ $t('@._settings.save') }}</ui-button>
 				</ui-horizon-group>
+				<ui-select v-model="recentReactionsCount">
+					<template #label>{{ $t('@._settings.recentReactionsCount') }}</template>
+					<option value="0">0</option>
+					<option value="5">5</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</ui-select>
+				<ui-switch v-model="enableRandomReactionPicker">{{ $t('@._settings.enableRandomReactionPicker') }}</ui-switch>
+				<ui-switch v-model="showDislikeInPicker">{{ $t('@._settings.showDislikeInPicker') }}</ui-switch>
 			</section>
 
 			<section>
@@ -122,8 +132,8 @@
 				<header>{{ $t('@._settings.note-visibility') }}</header>
 				<ui-switch v-model="rememberNoteVisibility">{{ $t('@._settings.remember-note-visibility') }}</ui-switch>
 				<section>
-					<header>{{ $t('@._settings.default-note-visibility') }}</header>
 					<ui-select v-model="defaultNoteVisibility">
+						<template #label>{{ $t('@._settings.default-note-visibility') }}</template>
 						<option value="public">{{ $t('@.note-visibility.public') }}</option>
 						<option value="home">{{ $t('@.note-visibility.home') }}</option>
 						<option value="followers">{{ $t('@.note-visibility.followers') }}</option>
@@ -136,8 +146,8 @@
 					</ui-select>
 				</section>
 				<section>
-					<header>{{ $t('@._settings.secondary-note-visibility') }}</header>
 					<ui-select v-model="secondaryNoteVisibility">
+						<template #label>{{ $t('@._settings.secondary-note-visibility') }}</template>
 						<option value="none">None</option>
 						<option value="public">{{ $t('@.note-visibility.public') }}</option>
 						<option value="home">{{ $t('@.note-visibility.home') }}</option>
@@ -151,8 +161,8 @@
 					</ui-select>
 				</section>
 				<section>
-					<header>{{ $t('@._settings.tertiary-note-visibility') }}</header>
 					<ui-select v-model="tertiaryNoteVisibility">
+						<template #label>{{ $t('@._settings.tertiary-note-visibility') }}</template>
 						<option value="none">None</option>
 						<option value="public">{{ $t('@.note-visibility.public') }}</option>
 						<option value="home">{{ $t('@.note-visibility.home') }}</option>
@@ -192,13 +202,15 @@
 				</ui-switch>
 				<ui-switch style="margin-left: 2em" :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ $t('@._settings.Notifications') }}
 				</ui-switch>
-				<label>{{ $t('@._settings.volume') }}</label>
-				<input type="range"
-					v-model="soundVolume"
-					:disabled="!enableSounds"
-					max="1"
-					step="0.1"
-				/>
+				<div style="display: flex; margin: 1em 0; gap: 1em;">
+					<label>{{ $t('@._settings.volume') }}</label>
+					<input type="range"
+						v-model="soundVolume"
+						:disabled="!enableSounds"
+						max="1"
+						step="0.1"
+					/>
+				</div>
 				<ui-button @click="soundTest"><fa icon="volume-up"/> {{ $t('@._settings.test') }}</ui-button>
 			</section>
 
@@ -593,6 +605,24 @@ export default Vue.extend({
 		mobileNotificationPosition: {
 			get() { return this.$store.state.device.mobileNotificationPosition; },
 			set(value) { this.$store.commit('device/set', { key: 'mobileNotificationPosition', value }); }
+		},
+
+		showDislikeInPicker: {
+			get() { return this.$store.state.device.showDislikeInPicker; },
+			set(value) { this.$store.commit('device/set', { key: 'showDislikeInPicker', value }); }
+		},
+
+		enableRandomReactionPicker: {
+			get() { return this.$store.state.device.enableRandomReactionPicker; },
+			set(value) { this.$store.commit('device/set', { key: 'enableRandomReactionPicker', value }); }
+		},
+
+		recentReactionsCount: {
+			get() { return this.$store.state.device.recentReactionsCount; },
+			set(value) {
+				this.$store.commit('device/set', { key: 'recentReactionsCount', value });
+				this.$store.commit('device/set', { key: 'recentReactions', value: this.$store.state.device.recentReactions.splice(0, value) });
+			}
 		},
 	},
 	created() {

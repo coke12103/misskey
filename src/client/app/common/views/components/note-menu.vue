@@ -89,7 +89,7 @@ export default Vue.extend({
 				},
 				this.note.userId == this.$store.state.i.id ? {
 					icon: ['fa', 'undo-alt'],
-					text: this.$t('edit'),
+					text: this.$t('@.edit'),
 					action: this.edit
 				} : undefined]
 				: []

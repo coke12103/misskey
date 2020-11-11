@@ -81,6 +81,10 @@ const defaultDeviceSettings = Object.assign({
 	roomUseOrthographicCamera: true,
 	activeEmojiCategoryName: undefined,
 	recentEmojis: [],
+	recentReactions: [],
+	recentReactionsCount: 5,
+	showDislikeInPicker: false,
+	enableRandomReactionPicker: false,
 	appType: 'auto',
 }, mods.defaultDeviceSettings || {});
 

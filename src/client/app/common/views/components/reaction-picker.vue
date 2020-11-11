@@ -8,10 +8,9 @@
 		<div class="text">
 			<input v-model="text" placeholder="Emoji" @keyup.enter="reactText" @keydown.esc="close" @input="tryReactText" v-autocomplete="{ model: 'text', noZwsp: true }" ref="text">
 			<button title="OK" @click="reactText"><fa icon="check"/></button>
-			<button title="Random" @click="reactRandom()"><fa :icon="faRandom"/></button>
 			<button title="Pick" class="emoji" @click="emoji" ref="emoji"><fa :icon="['far', 'laugh']"/></button>
-			<button title="Dislike" class="dislike" :class="{ disliked }" @click="toggleDisliked()"><fa :icon="disliked ? faThumbsDown : faThumbsUp"/></button>
-			<button v-if="recentReaction != null" @click="react(recentReaction)" tabindex="11" v-particle><mk-reaction-icon :reaction="recentReaction"/></button>
+			<button title="Random" @click="reactRandom()"><fa :icon="faRandom"/></button>
+			<button title="Dislike" class="dislike" v-if="$store.state.device.showDislikeInPicker" :class="{ disliked }" @click="toggleDisliked()"><fa :icon="disliked ? faThumbsDown : faThumbsUp"/></button>
 		</div>
 	</div>
 </div>
@@ -48,7 +47,6 @@ export default Vue.extend({
 			faRandom, faThumbsUp, faThumbsDown,
 			rs: this.reactions || this.$store.state.settings.reactions,
 			text: null,
-			recentReaction: null,
 			disliked: false,
 		};
 	},
@@ -59,6 +57,22 @@ export default Vue.extend({
 				'esc': this.close,
 			};
 		}
+	},
+
+	created() {
+		if (this.$store.state.device.enableRandomReactionPicker) {
+			const list = emojilist.filter(x => x.category !== 'flags').map((x: any) => x.char);
+			const result = [];
+
+			for (let i = 0; i < 10; i++) {
+				const index = Math.floor(Math.random() * list.length);
+				const reaction = list[index];
+				result.push(reaction);
+			}
+			this.rs = result;
+		}
+
+		this.rs = this.rs.concat(this.$store.state.device.recentReactions || []);
 	},
 
 	mounted() {
@@ -91,8 +105,6 @@ export default Vue.extend({
 			popover.style.top = `${popY + window.pageYOffset}px`;
 		};
 
-		this.recentReaction = localStorage.getItem('recentReaction');
-
 		this.$nextTick(() => {
 			fixPos();
 
@@ -115,16 +127,20 @@ export default Vue.extend({
 	},
 
 	methods: {
-		react(reaction) {
+		react(reaction: string) {
 			this.$emit('chosen', reaction, this.disliked);
+
+			// recent
+			if (this.rs.includes(reaction)) return;
+
+			let recents = this.$store.state.device.recentReactions || [];
+			recents = recents.filter((x: string) => x !== reaction);
+			recents.unshift(reaction);
+			this.$store.commit('device/set', { key: 'recentReactions', value: recents.splice(0, this.$store.state.device.recentReactionsCount) });
 		},
 
 		reactText() {
 			if (!this.text) return;
-			const m = this.text.match(emojiRegex);
-			if (m) {
-				localStorage.setItem('recentReaction', m[1]);
-			}
 			this.react(this.text);
 		},
 
@@ -149,10 +165,13 @@ export default Vue.extend({
 		},
 
 		reactRandom() {
-			const list = emojilist.filter(x => x.category !== 'flags');
+			let list = emojilist.filter(x => x.category !== 'flags').map((x: any) => x.char);
+			let local = ((this.$root.getMetaSync() || { emojis: [] }).emojis || []).map((x: any) => `:${x.name}:`);
+			list = list.concat(local);
+
 			const index = Math.floor(Math.random() * list.length);
-			const char = list[index].char;
-			this.react(char);
+			const reaction = list[index];
+			this.react(reaction);
 		},
 
 		async emoji() {
@@ -248,9 +267,9 @@ export default Vue.extend({
 			border-bottom solid var(--lineWidth) var(--faceDivider)
 
 		> .buttons
-			padding 4px 4px 8px 4px
+			padding 4px 0px 8px 8px
 			width 216px
-			text-align center
+			text-align left
 
 			> button
 				padding 0

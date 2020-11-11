@@ -7,7 +7,7 @@ import Meta from '../../../models/meta';
 import RegistrationTicket from '../../../models/registration-tickets';
 import usersChart from '../../../services/chart/users';
 import fetchMeta from '../../../misc/fetch-meta';
-import { verifyRecaptcha } from '../../../misc/captcha'; 
+import { verifyRecaptcha } from '../../../misc/captcha';
 import { genRsaKeyPair } from '../../../misc/gen-key-pair';
 
 export default async (ctx: Router.RouterContext) => {

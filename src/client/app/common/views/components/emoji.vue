@@ -69,7 +69,7 @@ export default Vue.extend({
 
 	created() {
 		if (this.name) {
-			const customEmoji = this.customEmojis.find(x => x.name == this.name);
+			const customEmoji = this.customEmojis.find(x => x && x.name === this.name);
 			if (customEmoji) {
 				this.customEmoji = customEmoji;
 				this.url = this.$store.state.device.disableShowingAnimatedImages

@@ -101,6 +101,8 @@ common:
   only-moved: "引っ越したユーザーのみ"
   desktop-mode: 'デスクトップ版'
   mobile-mode: 'モバイル版'
+  empty: 'ありません！'
+  edit: '編集'
 
   favorites: "お気に入り"
   noteReactions: "リアクションした投稿"
@@ -324,6 +326,9 @@ common:
     preview: "プレビュー"
     home-profile: "ホームのプロファイル"
     deck-profile: "デッキのプロファイル"
+    recentReactionsCount: "履歴の数"
+    showDislikeInPicker: "Dislikeを表示する"
+    enableRandomReactionPicker: "ピッカー表示ごとにランダムに設定する"
     room: "ルーム"
     _room:
       graphicsQuality: "グラフィックの品質"

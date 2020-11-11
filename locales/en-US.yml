@@ -87,6 +87,8 @@ common:
   only-moved: "Moved users only"
   desktop-mode: 'Desktop mode'
   mobile-mode: 'Mobile mode'
+  empty: 'Empty'
+  edit: 'Edit'
   favorites: "Favorites"
   noteReactions: "Reacted notes"
   permissions:
@@ -294,6 +296,9 @@ common:
     preview: "Preview"
     home-profile: "Home profile"
     deck-profile: "Deck profile"
+    recentReactionsCount: "Number of histories"
+    showDislikeInPicker: "Show Dislike"
+    enableRandomReactionPicker: "Randomly set for each picker display"
     room: "Room"
     _room:
       graphicsQuality: "Graphics Quality"

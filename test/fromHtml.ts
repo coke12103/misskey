@@ -23,6 +23,10 @@ describe('fromHtml', () => {
 		assert.deepStrictEqual(fromHtml('<p>a <a href="https://example.com/b">https://example.com/b</a> d</p>'), 'a https://example.com/b d');
 	});
 
+	it('link with same text, but not encoded', () => {
+		assert.deepStrictEqual(fromHtml('<p>a <a href="https://example.com/ä">https://example.com/ä</a> d</p>'), 'a <https://example.com/ä> d');
+	});
+
 	it('link with no url', () => {
 		assert.deepStrictEqual(fromHtml('<p>a <a href="b">c</a> d</p>'), 'a [c](b) d');
 	});

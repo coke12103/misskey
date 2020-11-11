@@ -19,7 +19,7 @@
 	<button class="more" :class="{ fetching: fetchingMoreNotifications }" v-if="moreNotifications" @click="fetchMoreNotifications" :disabled="fetchingMoreNotifications">
 		<template v-if="fetchingMoreNotifications"><fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreNotifications ? this.$t('@.loading') : this.$t('@.load-more') }}
 	</button>
-	<p class="empty" v-if="notifications.length == 0 && !fetching">{{ $t('empty') }}</p>
+	<p class="empty" v-if="notifications.length == 0 && !fetching">{{ $t('@.empty') }}</p>
 </div>
 </template>
 

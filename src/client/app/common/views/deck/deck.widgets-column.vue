@@ -91,7 +91,7 @@ export default Vue.extend({
 	created() {
 		this.menu = [{
 			icon: 'cog',
-			text: this.$t('edit'),
+			text: this.$t('@.edit'),
 			action: () => {
 				this.edit = !this.edit;
 			}
