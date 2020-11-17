@@ -183,6 +183,7 @@ init(async (launch, os) => {
 			{ path: '/share', component: MkShare },
 			{ path: '/games/reversi/:game?', component: MkReversi },
 			{ path: '/authorize-follow', component: MkFollow },
+			{ path: '/mfm-cheat-sheet', component: () => import('../common/views/pages/mfm-cheat-sheet.vue').then(m => m.default) },
 			{ path: '/deck', redirect: '/' },
 			{ path: '*', component: MkNotFound }
 		],

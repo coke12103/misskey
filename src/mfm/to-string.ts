@@ -21,6 +21,13 @@ export function toString(tokens: MfmForest | null, opts?: RestoreOptions): strin
 			return `***${appendChildren(token.children, opts)}***`;
 		},
 
+		fn(token, opts) {
+			const name = token.node.props?.name;
+			const args = token.node.props?.args || {};
+			const argsStr = Object.entries(args).map(([k, v]) => v === true ? k : `${k}=${v}`).join(',');
+			return `[${name}${argsStr !== '' ? '.' + argsStr : ''} ${appendChildren(token.children, opts)}]`;
+		},
+
 		small(token, opts) {
 			return `<small>${appendChildren(token.children, opts)}</small>`;
 		},
@@ -50,11 +57,15 @@ export function toString(tokens: MfmForest | null, opts?: RestoreOptions): strin
 		},
 
 		xspin(token, opts) {
-			return `<xspin>${appendChildren(token.children, opts)}</xspin>`;
+			const attr = token.node.props?.attr;
+			const post = attr ? ` ${attr}` : '';
+			return `<xspin${post}>${appendChildren(token.children, opts)}</xspin>`;
 		},
 
 		yspin(token, opts) {
-			return `<yspin>${appendChildren(token.children, opts)}</yspin>`;
+			const attr = token.node.props?.attr;
+			const post = attr ? ` ${attr}` : '';
+			return `<yspin${post}>${appendChildren(token.children, opts)}</yspin>`;
 		},
 
 		jump(token, opts) {

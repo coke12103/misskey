@@ -2,13 +2,13 @@
  * Tests of fromHtml
  *
  * How to run the tests:
- * > mocha test/fromHtml.ts --require ts-node/register
+ * > mocha test/mfm/from-html.ts --require ts-node/register
  *
  * To specify test:
- * > mocha test/fromHtml.ts --require ts-node/register -g 'test name'
+ * > mocha test/mfm/from-html.ts --require ts-node/register -g 'test name'
  */
 import * as assert from 'assert';
-import { fromHtml } from '../src/mfm/fromHtml';
+import { fromHtml } from '../../src/mfm/from-html';
 
 describe('fromHtml', () => {
 	it('br', () => {
@@ -17,6 +17,10 @@ describe('fromHtml', () => {
 
 	it('link with different text', () => {
 		assert.deepStrictEqual(fromHtml('<p>a <a href="https://example.com/b">c</a> d</p>'), 'a [c](https://example.com/b) d');
+	});
+
+	it('link with different text, but not encoded', () => {
+		assert.deepStrictEqual(fromHtml('<p>a <a href="https://example.com/ä">c</a> d</p>'), 'a [c](<https://example.com/ä>) d');
 	});
 
 	it('link with same text', () => {

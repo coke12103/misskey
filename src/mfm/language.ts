@@ -41,8 +41,7 @@ export const mfmLanguage = P.createLanguage({
 	}),
 	title: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
-		// eslint-disable-next-line no-useless-escape
-		const match = text.match(/^([【\[]([^【\[】\]\n]+?)[】\]])(\n|$)/);
+		const match = text.match(/^([【]([^【】\n]+?)[】])(\n|$)/);
 		if (!match) return P.makeFailure(i, 'not a title');
 		const q = match[2].trim();
 		const contents = r.inline.atLeast(1).tryParse(q);
@@ -100,6 +99,7 @@ export const mfmLanguage = P.createLanguage({
 		r.url,
 		r.link,
 		r.emoji,
+		r.fn,
 		r.text
 	),
 	big: r => P.regexp(/^\*\*\*([\s\S]+?)\*\*\*/, 1).map(x => createTree('big', r.inline.atLeast(1).tryParse(x), {})),
@@ -146,8 +146,34 @@ export const mfmLanguage = P.createLanguage({
 			}
 		}).map(x => createTree('spin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
-	xspin: r => P.regexp(/<xspin>(.+?)<\/xspin>/, 1).map(x => createTree('xspin', r.inline.atLeast(1).tryParse(x), {})),
-	yspin: r => P.regexp(/<yspin>(.+?)<\/yspin>/, 1).map(x => createTree('yspin', r.inline.atLeast(1).tryParse(x), {})),
+	xspin: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<xspin(\s[a-z]+?)?>(.+?)<\/xspin>/i);
+
+			if (match) {
+				return P.makeSuccess(i + match[0].length, {
+					content: match[2], attr: match[1] ? match[1].trim() : null
+				});
+			} else {
+				return P.makeFailure(i, 'not a spin');
+			}
+		}).map(x => createTree('xspin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+	},
+	yspin: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<yspin(\s[a-z]+?)?>(.+?)<\/yspin>/i);
+
+			if (match) {
+				return P.makeSuccess(i + match[0].length, {
+					content: match[2], attr: match[1] ? match[1].trim() : null
+				});
+			} else {
+				return P.makeFailure(i, 'not a spin');
+			}
+		}).map(x => createTree('yspin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+	},
 	jump: r => P.alt(P.regexp(/<jump>(.+?)<\/jump>/, 1), P.regexp(/\{\{\{([\s\S]+?)\}\}\}/, 1)).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
 	flip: r => {
 		const a = P.regexp(/<flip>(.+?)<\/flip>/, 1);
@@ -235,6 +261,30 @@ export const mfmLanguage = P.createLanguage({
 		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createLeaf('emoji', { name: x }));
 		const code = P.regexp(emojiRegex).map(x => createLeaf('emoji', { emoji: x }));
 		return P.alt(name, code);
+	},
+	fn: r => {
+		return P.seqObj(
+			P.string('['), ['fn', P.regexp(/[^\s\n\[\]]+/)] as any, P.string(' '), P.optWhitespace, ['text', P.regexp(/[^\n\[\]]+/)] as any, P.string(']'),
+		).map((x: any) => {
+			let name = x.fn;
+			const args = {};
+			const separator = x.fn.indexOf('.');
+			if (separator > -1) {
+				name = x.fn.substr(0, separator);
+				for (const arg of x.fn.substr(separator + 1).split(',')) {
+					const kv = arg.split('=');
+					if (kv.length === 1) {
+						args[kv[0]] = true;
+					} else {
+						args[kv[0]] = kv[1];
+					}
+				}
+			}
+			return createTree('fn', r.inline.atLeast(1).tryParse(x.text), {
+				name,
+				args
+			});
+		});
 	},
 	text: () => P.any.map(x => createLeaf('text', { text: x }))
 });
