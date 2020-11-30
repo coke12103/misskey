@@ -80,6 +80,21 @@
 				<ui-switch v-model="games_reversi_showBoardLabels">{{ $t('@._settings.show-reversi-board-labels') }}</ui-switch>
 				<ui-switch v-model="games_reversi_useAvatarStones">{{ $t('@._settings.use-avatar-reversi-stones') }}</ui-switch>
 			</section>
+			<section>
+				<header>{{ $t('@._settings.emojiFlavor') }}</header>
+				<!--
+				<ui-input v-model="emojiFlavor" :datalist="['default', 'google']"></ui-input>
+				-->
+				<ui-select v-model="emojiFlavor">
+					<template #label>{{ $t('@._settings.emojiFlavor') }}</template>
+					<option value="default">{{ $t('@._settings.emojiFlavor-default') }}</option>
+					<option value="google">{{ $t('@._settings.emojiFlavor-google') }}</option>
+					<option value="apple">{{ $t('@._settings.emojiFlavor-apple') }}</option>
+					<!--
+					<option value="facebook">{{ $t('@._settings.emojiFlavor-facebook') }}</option>
+					-->
+				</ui-select>
+			</section>
 		</ui-card>
 	</template>
 
@@ -175,6 +190,15 @@
 						<option value="once-specified">{{ $t('@.note-visibility.once-specified') }}</option>
 					</ui-select>
 				</section>
+			</section>
+
+			<section>
+				<header>{{ $t('@._settings.hasDisconnectedAction') }}</header>
+				<ui-select v-model="hasDisconnectedAction">
+					<option value="reload">{{ $t('@._settings._hasDisconnectedAction.reload') }}</option>
+					<option value="notify">{{ $t('@._settings._hasDisconnectedAction.notify') }}</option>
+					<option value="nothing">{{ $t('@._settings._hasDisconnectedAction.nothing') }}</option>
+				</ui-select>
 			</section>
 
 			<section>
@@ -416,6 +440,11 @@ export default Vue.extend({
 			set(value) { this.$store.commit('device/set', { key: 'visibilityColoring', value }); }
 		},
 
+		emojiFlavor: {
+			get() { return this.$store.state.device.emojiFlavor || 'default'; },
+			set(value) { this.$store.commit('device/set', { key: 'emojiFlavor', value }); }
+		},
+
 		enableSounds: {
 			get() { return this.$store.state.device.enableSounds; },
 			set(value) { this.$store.commit('device/set', { key: 'enableSounds', value }); }
@@ -565,6 +594,11 @@ export default Vue.extend({
 		iLikeSushi: {
 			get() { return this.$store.state.settings.iLikeSushi; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'iLikeSushi', value }); }
+		},
+
+		hasDisconnectedAction: {
+			get() { return this.$store.state.device.hasDisconnectedAction; },
+			set(value) { this.$store.commit('device/set', { key: 'hasDisconnectedAction', value }); }
 		},
 
 		roomUseOrthographicCamera: {

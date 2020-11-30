@@ -59,6 +59,11 @@ export default Vue.component('misskey-flavored-markdown', {
 		let bigCount = 0;
 		let motionCount = 0;
 
+		const validTime = (t: string | null | undefined) => {
+			if (t == null) return null;
+			return t.match(/^[0-9.]+s$/) ? t : null;
+		}
+
 		const genEl = (ast: MfmForest, inQuote?: string) => concat(ast.map((token): VNode[] => {
 			switch (token.node.type) {
 				case 'text': {
@@ -114,17 +119,17 @@ export default Vue.component('misskey-flavored-markdown', {
 							break;
 						}
 						case 'jelly': {
-							const speed = token.node.props.args.speed || '1s';
+							const speed = validTime(token.node.props.args.speed) || '1s';
 							style = (!this.$store.state.settings.disableAnimatedMfm ? `animation: mfm-rubberBand ${speed} linear infinite both;` : '');
 							break;
 						}
 						case 'twitch': {
-							const speed = token.node.props.args.speed || '0.5s';
+							const speed = validTime(token.node.props.args.speed) || '0.5s';
 							style = !this.$store.state.settings.disableAnimatedMfm ? `animation: mfm-twitch ${speed} ease infinite;` : '';
 							break;
 						}
 						case 'shake': {
-							const speed = token.node.props.args.speed || '0.5s';
+							const speed = validTime(token.node.props.args.speed) || '0.5s';
 							style = !this.$store.state.settings.disableAnimatedMfm ? `animation: mfm-shake ${speed} ease infinite;` : '';
 							break;
 						}
@@ -137,8 +142,9 @@ export default Vue.component('misskey-flavored-markdown', {
 								token.node.props.args.x ? 'mfm-spinX' :
 								token.node.props.args.y ? 'mfm-spinY' :
 								'mfm-spin';
-							const speed = token.node.props.args.speed || '1.5s';
-							style = !this.$store.state.settings.disableAnimatedMfm ? `animation: ${anime} ${speed} linear infinite; animation-direction: ${direction};` : '';
+							const speed = validTime(token.node.props.args.speed) || '1.5s';
+							const delay = validTime(token.node.props.args.delay) || '0s';
+							style = !this.$store.state.settings.disableAnimatedMfm ? `animation: ${anime} ${speed} ${delay} linear infinite; animation-direction: ${direction};` : '';
 							break;
 						}
 						case 'jump': {
@@ -393,7 +399,9 @@ export default Vue.component('misskey-flavored-markdown', {
 						key: Math.random(),
 						attrs: {
 							emoji: token.node.props.emoji,
-							name: token.node.props.name
+							name: token.node.props.name,
+							vendor: token.node.props.vendor,
+							local: token.node.props.local,
 						},
 						props: {
 							customEmojis: this.customEmojis || customEmojis,

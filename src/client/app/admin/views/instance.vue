@@ -60,6 +60,7 @@
 				<ui-input v-model="smtpPass" type="password" :withPasswordToggle="true" :disabled="!enableEmail || !smtpAuth">{{ $t('smtp-pass') }}</ui-input>
 			</ui-horizon-group>
 			<ui-switch v-model="smtpSecure" :disabled="!enableEmail">{{ $t('smtp-secure') }}<template #desc>{{ $t('smtp-secure-info') }}</template></ui-switch>
+			<ui-button @click="testEmail()">{{ $t('test-mail') }}</ui-button>
 		</section>
 		<section>
 			<header><fa :icon="faBolt"/> {{ $t('serviceworker-config') }}</header>
@@ -239,6 +240,24 @@ export default Vue.extend({
 		invite() {
 			this.$root.api('admin/invite').then(x => {
 				this.inviteCode = x.code;
+			}).catch(e => {
+				this.$root.dialog({
+					type: 'error',
+					text: e
+				});
+			});
+		},
+
+		async testEmail() {
+			this.$root.api('admin/send-email', {
+				to: this.maintainerEmail,
+				subject: 'Test email',
+				text: 'Na'
+			}).then(x => {
+				this.$root.dialog({
+					type: 'success',
+					splash: true
+				});
 			}).catch(e => {
 				this.$root.dialog({
 					type: 'error',

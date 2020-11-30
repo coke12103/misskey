@@ -1,9 +1,8 @@
 import { IDriveFile } from '../models/drive-file';
 import config from '../config';
 
-export default function(file: IDriveFile, thumbnail = false, safety = false): string | null | undefined {
+export default function(file: IDriveFile, thumbnail = false): string | null | undefined {
 	if (file == null) return null;
-	if (safety && file.metadata && file.metadata.isSensitive) return null;
 
 	const isImage = file.contentType && ['image/png', 'image/apng', 'image/gif', 'image/jpeg', 'image/webp', 'image/svg+xml'].includes(file.contentType);
 

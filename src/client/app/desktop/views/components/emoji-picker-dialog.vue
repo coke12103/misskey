@@ -38,7 +38,7 @@ export default Vue.extend({
 		this.$nextTick(() => {
 			// nextTickだと間に合わない？ので最小サイズを指定
 			const width = Math.max(this.$el.offsetWidth, 350);
-			const height = Math.max(this.$el.offsetHeight, 340);
+			const height = Math.max(this.$el.offsetHeight, 390);
 
 			let x = this.x - window.pageXOffset;
 			let y = this.y - window.pageYOffset;
@@ -63,9 +63,13 @@ export default Vue.extend({
 
 	methods: {
 		onMousedown(e) {
-			e.preventDefault();
-			if (!contains(this.$el, e.target) && (this.$el != e.target)) this.close();
-			return false;
+			if (!contains(this.$el, e.target) && (this.$el != e.target)) {
+				e.preventDefault();
+				this.close();
+				return false;
+			} else {
+				return true;
+			}
 		},
 
 		chosen(args: { emoji: string, close: boolean }) {

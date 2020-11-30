@@ -195,16 +195,23 @@
 	</section>
 
 	<section>
-		<header>色ズレアニメーション</header>
+		<header>色ずれアニメーション</header>
 		<p><mfm :text="preview_rgbshift" :key="preview_rgbshift"/></p>
 		<ui-textarea :slim="false" class="text" v-model="preview_rgbshift"></ui-textarea>
 	</section>
 
 	<section>
-		<header>fn系速度調整</header>
-		<p>fn系の一部は1ループの速度調整ができます。ただし、fn系同士でのネストができません。</p>
+		<header>fn系speed</header>
+		<p>fn系の一部は1ループの速度調整ができます。なお、fn系同士ではネストができません。</p>
 		<p><mfm :text="preview_fnSpeed" :key="preview_fnSpeed"/></p>
 		<ui-textarea :slim="false" class="text" v-model="preview_fnSpeed"></ui-textarea>
+	</section>
+
+	<section>
+		<header>fn系delay</header>
+		<p>fn系の一部はループの開始タイミングを調整できます。</p>
+		<p><mfm :text="preview_fnDelay" :key="preview_fnDelay"/></p>
+		<ui-textarea :slim="false" class="text" v-model="preview_fnDelay"></ui-textarea>
 	</section>
 
 </ui-card>
@@ -256,7 +263,8 @@ export default Vue.extend({
 			preview_fnFlip: '[flip MisskeyでFediverseの世界が広がります]\n[flip.v MisskeyでFediverseの世界が広がります]\n[flip.h,v MisskeyでFediverseの世界が広がります]',
 			preview_fnSpin: '[spin あいう] [spin.left あいう] [spin.alternate あいう]\n[spin.x あいう] [spin.x,left あいう] [spin.x,alternate あいう]\n[spin.y あいう] [spin.y,left あいう] [spin.y,alternate あいう]',
 			preview_fnSpeed: '[spin.y,left,speed=1s あいう]\n[spin.y,left,speed=2s あいう]\n[spin.y,left,speed=3s あいう]',
-			preview_rgbshift: '[rgbshift 色ズレアニメーション効果です]',
+			preview_fnDelay: '[spin.y,left,speed=1s,delay=0.1s あいう]\n[spin.y,left,speed=1s,delay=0.2s あいう]\n[spin.y,left,speed=1s,delay=0.3s あいう]',
+			preview_rgbshift: '[rgbshift 色ずれアニメーション効果です]',
 
 			faQuestionCircle
 		};
