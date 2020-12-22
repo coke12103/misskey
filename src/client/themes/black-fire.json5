@@ -1,0 +1,18 @@
+{
+	id: 'b94b9f40-a8cf-407b-932d-c736a97e45fa',
+
+	name: 'Black fire',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#e2682a',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

@@ -34,6 +34,13 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 				break;
 
 			case 'a': {
+				const name = getValue(node, 'data-mfm');
+				if (name === 'search') {
+					const query = getValue(node, 'data-mfm-query')
+					text += `${query} Search`;
+					break;
+				}
+
 				const txt = getText(node);
 				const rel = node.attrs.find((x: any) => x.name == 'rel');
 				const href = node.attrs.find((x: any) => x.name == 'href');

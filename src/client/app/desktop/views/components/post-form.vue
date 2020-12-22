@@ -230,6 +230,9 @@ export default Vue.extend({
 				this.focus();
 
 				this.$nextTick(() => this.watch());
+
+				const len = this.text.length;
+				if (len > 0 && this.$refs.text) (this.$refs.text as HTMLTextAreaElement).setSelectionRange(len, len);
 			});
 		});
 	},

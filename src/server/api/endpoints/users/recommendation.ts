@@ -89,9 +89,10 @@ export default define(meta, async (ps, me) => {
 	}, {
 		$unwind: '$_user'
 	}, {
-		// updatedAtでユーザーフィルタ
+		// ユーザーフィルタ
 		$match: {
-			'_user.updatedAt': { $gt: new Date(Date.now() - (1000 * 60 * 60 * 24 * 5)) }
+			'_user.updatedAt': { $gt: new Date(Date.now() - (1000 * 60 * 60 * 24 * 5)) },
+			'_user.isExplorable': true
 		}
 	}, {
 		// フォロワー多い順

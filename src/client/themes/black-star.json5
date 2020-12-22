@@ -1,0 +1,18 @@
+{
+	id: 'a0b4ea8a-2c65-4527-95d7-4b19988c9278',
+
+	name: 'Black star',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#f2b231',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

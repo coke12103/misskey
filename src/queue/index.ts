@@ -4,7 +4,6 @@ import * as httpSignature from 'http-signature';
 
 import config from '../config';
 import { ILocalUser } from '../models/user';
-import { program } from '../argv';
 
 import processDeliver from './processors/deliver';
 import processInbox from './processors/inbox';
@@ -14,6 +13,7 @@ import { IDriveFile } from '../models/drive-file';
 import { INote } from '../models/note';
 import { getJobInfo } from './get-job-info';
 import { IActivity } from '../remote/activitypub/type';
+import { IMute } from '../models/mute';
 
 function initializeQueue<T>(name: string, limitPerSec = -1) {
 	return new Queue<T>(name, config.redis != null ? {
@@ -62,7 +62,7 @@ export type InboxRequestData = {
 	ip?: string;
 };
 
-export type DbJobData = DbUserJobData | DbUserImportJobData | DeleteNoteJobData;
+export type DbJobData = DbUserJobData | DbUserImportJobData | DeleteNoteJobData | NotifyPollFinishedData | ExpireMuteJobData;
 
 export type DbUserJobData = {
 	user: ILocalUser;
@@ -76,6 +76,15 @@ export type DbUserImportJobData = {
 export type DeleteNoteJobData = {
 	noteId: ObjectID;
 };
+
+export type NotifyPollFinishedData = {
+	userId: string;	// ObjectIDを入れてもstringでシリアライズされるだけ
+	noteId: string;
+}
+
+export type ExpireMuteJobData = {
+	muteId: string;
+}
 //#endregion
 
 export const deliverQueue = initializeQueue<DeliverJobData>('deliver', config.deliverJobPerSec || 128);
@@ -194,6 +203,34 @@ export function createDeleteNoteJob(note: INote, delay: number) {
 	});
 }
 
+export function createExpireMuteJob(mute: IMute) {
+	if (!mute.expiresAt) return;
+	let delay = mute.expiresAt.getTime() - Date.now() + 1000;
+	if (delay < 0) delay = 1000;
+
+	return dbQueue.add('expireMute', {
+		muteId: `${mute._id}`
+	}, {
+		delay,
+		removeOnComplete: true,
+		removeOnFail: true
+	});
+}
+
+export function createNotifyPollFinishedJob(note: INote, user: ILocalUser, expiresAt: Date) {
+	let delay = expiresAt.getTime() - Date.now() + 2000;
+	if (delay < 0) delay = 2000;
+
+	return dbQueue.add('notifyPollFinished', {
+		noteId: `${note._id}`,
+		userId: `${user._id}`
+	}, {
+		delay,
+		removeOnComplete: true,
+		removeOnFail: true
+	});
+}
+
 export function createExportNotesJob(user: ILocalUser) {
 	return dbQueue.add('exportNotes', {
 		user: user
@@ -285,14 +322,25 @@ export default function() {
 	processDb(dbQueue);
 }
 
-export function destroy() {
-	deliverQueue.once('cleaned', (jobs, status) => {
-		deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-	});
-	deliverQueue.clean(0, 'delayed');
+export function destroy(domain?: string) {
+	if (domain == null || domain === 'deliver') {
+		deliverQueue.once('cleaned', (jobs, status) => {
+			deliverLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
+		});
+		deliverQueue.clean(0, 'delayed');
+	}
 
-	inboxQueue.once('cleaned', (jobs, status) => {
-		inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
-	});
-	inboxQueue.clean(0, 'delayed');
+	if (domain == null || domain === 'inbox') {
+		inboxQueue.once('cleaned', (jobs, status) => {
+			inboxLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
+		});
+		inboxQueue.clean(0, 'delayed');
+	}
+
+	if (domain === 'db') {
+		dbQueue.once('cleaned', (jobs, status) => {
+			dbLogger.succ(`Cleaned ${jobs.length} ${status} jobs`);
+		});
+		dbQueue.clean(0, 'delayed');
+	}
 }

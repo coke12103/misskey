@@ -1,0 +1,18 @@
+{
+	id: 'f81bb561-83de-45e0-9247-02df12f6806c',
+
+	name: 'Black avocado',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#58bd67',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

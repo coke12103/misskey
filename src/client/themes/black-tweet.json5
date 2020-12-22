@@ -1,0 +1,18 @@
+{
+	id: 'aa745601-3917-4a7e-9843-7a3513ed9e6b',
+
+	name: 'Black tweet',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#509df0',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

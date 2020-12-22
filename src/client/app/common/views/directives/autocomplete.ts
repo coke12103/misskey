@@ -100,7 +100,7 @@ class Autocomplete {
 
 		if (isMention) {
 			const username = text.substr(mentionIndex + 1);
-			if (username != '' && username.match(/^\S+$/)) {
+			if (username.match(/^[\w-]+$/)) {
 				this.open('user', username);
 				opened = true;
 			}
@@ -116,7 +116,7 @@ class Autocomplete {
 
 		if (isEmoji && opened == false && !this.opts.userOnly && !this.opts.noEmoji) {
 			const emoji = text.substr(emojiIndex + 1);
-			if (!emoji.includes(' ')) {
+			if (emoji === '' || emoji.match(/^[\w+-]+$/)) {
 				this.open('emoji', emoji);
 				opened = true;
 			}

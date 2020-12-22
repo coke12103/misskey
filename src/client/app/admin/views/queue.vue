@@ -2,6 +2,8 @@
 <div>
 	<ui-card>
 		<template #title><fa :icon="faChartBar"/> {{ $t('title') }}</template>
+
+		<!-- Deliver -->
 		<section class="wptihjuy">
 			<header><fa :icon="faPaperPlane"/> Deliver</header>
 			<ui-horizon-group inputs v-if="latestStats" class="fit-bottom">
@@ -27,10 +29,13 @@
 				</ui-input>
 			</ui-horizon-group>
 			<div ref="deliverChart" class="chart"></div>
-			<div v-if="$store.getters.isAdminOrModerator">
-				<ui-button @click="promoteJobs('deliver')">Promote jobs</ui-button>
-			</div>
+			<ui-horizon-group v-if="$store.getters.isAdminOrModerator" inputs class="fit-bottom">
+				<ui-button @click="promoteJobs('deliver')">{{ $t('promoteJobs') }}</ui-button>
+				<ui-button @click="removeJobs('deliver')">{{ $t('clearJobs') }}</ui-button>
+			</ui-horizon-group >
 		</section>
+
+		<!-- Inbox -->
 		<section class="wptihjuy">
 			<header><fa :icon="faInbox"/> Inbox</header>
 			<ui-horizon-group inputs v-if="latestStats" class="fit-bottom">
@@ -56,9 +61,10 @@
 				</ui-input>
 			</ui-horizon-group>
 			<div ref="inboxChart" class="chart"></div>
-		</section>
-		<section v-if="$store.getters.isAdminOrModerator">
-			<ui-button @click="removeAllJobs">{{ $t('remove-all-jobs') }}</ui-button>
+			<ui-horizon-group v-if="$store.getters.isAdminOrModerator" inputs class="fit-bottom">
+				<ui-button @click="promoteJobs('inbox')">{{ $t('promoteJobs') }}</ui-button>
+				<ui-button @click="removeJobs('inbox')">{{ $t('clearJobs') }}</ui-button>
+			</ui-horizon-group >
 		</section>
 	</ui-card>
 
@@ -70,6 +76,7 @@
 					<template #label>{{ $t('queue') }}</template>
 					<option value="deliver">{{ $t('domains.deliver') }}</option>
 					<option value="inbox">{{ $t('domains.inbox') }}</option>
+					<option value="db">{{ $t('domains.db') }}</option>
 				</ui-select>
 				<ui-select v-model="state">
 					<template #label>{{ $t('state') }}</template>
@@ -86,7 +93,10 @@
 				<template v-if="domain === 'inbox'">
 					<span>{{ job.data.activity.id }}</span>
 				</template>
-				<span>{{ `(${job.attempts}/${job.maxAttempts}, ${Math.floor((jobsFetched - job.timestamp) / 1000 / 60)}min)` }}</span>
+				<template v-if="domain === 'db'">
+					<span>{{ job.name }}</span>
+				</template>
+				<span>{{ `(${job.attempts}/${job.maxAttempts}, age=${Math.floor((jobsFetched - job.timestamp) / 1000 / 60)}min${job.delay ? `, firstAttemptDelay=${Math.floor(job.delay / 1000 / 60)}min` : ''})` }}</span>
 			</div>
 			<ui-info v-if="jobs.length == jobsLimit">{{ $t('result-is-truncated', { n: jobsLimit }) }}</ui-info>
 		</section>
@@ -270,6 +280,22 @@ export default Vue.extend({
 			};
 
 			await process().catch(e => {
+				this.$root.dialog({
+					type: 'error',
+					text: e.toString()
+				});
+			});
+		},
+
+		async removeJobs(domain: string) {
+			this.$root.api('admin/queue/clear', {
+				domain
+			}).then(() => {
+				this.$root.dialog({
+					type: 'success',
+					splash: true
+				});
+			}).catch((e: any) => {
 				this.$root.dialog({
 					type: 'error',
 					text: e.toString()

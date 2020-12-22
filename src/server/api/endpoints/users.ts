@@ -73,10 +73,11 @@ const state: any = { // < https://github.com/Microsoft/TypeScript/issues/1863
 		]
 	},
 	'verified': { isVerified: true },
-	'alive': {
-		updatedAt: { $gt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5) }
-	},
-	[fallback]: {}
+	'alive': { $and: [
+		{ updatedAt: { $gt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5) } },
+		{ isExplorable: true }
+	]},
+	[fallback]: { isExplorable: true }
 };
 
 const origin: any = { // < https://github.com/Microsoft/TypeScript/issues/1863

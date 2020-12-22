@@ -142,6 +142,7 @@ export default Vue.extend({
 
 	data() {
 		return {
+			fetched: false,
 			url,
 			host: toUnicode(host),
 			maintainerName: null,
@@ -233,6 +234,13 @@ export default Vue.extend({
 			this.enableServiceWorker = meta.enableServiceWorker;
 			this.swPublicKey = meta.swPublickey;
 			this.swPrivateKey = meta.swPrivateKey;
+
+			this.fetched = true;
+		}).catch(e => {
+			this.$root.dialog({
+				type: 'error',
+				text: 'meta fetch failed'
+			});
 		});
 	},
 
@@ -267,6 +275,14 @@ export default Vue.extend({
 		},
 
 		updateMeta() {
+			if (!this.fetched) {
+				this.$root.dialog({
+					type: 'error',
+					text: 'Cannot continue because meta fetch has failed'
+				});
+				return;
+			}
+
 			this.$root.api('admin/update-meta', {
 				maintainerName: this.maintainerName,
 				maintainerEmail: this.maintainerEmail,

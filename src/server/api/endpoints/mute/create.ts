@@ -4,8 +4,9 @@ import Mute from '../../../../models/mute';
 import define from '../../define';
 import { ApiError } from '../../error';
 import { getUser } from '../../common/getters';
-import { getMute } from '../../../../models/user';
 import { publishMutingChanged } from '../../../../services/create-event';
+import { inspect } from 'util';
+import { createExpireMuteJob } from '../../../../queue';
 
 export const meta = {
 	desc: {
@@ -28,6 +29,14 @@ export const meta = {
 				'en-US': 'Target user ID'
 			}
 		},
+
+		expiresAt: {
+			validator: $.optional.nullable.num.int(),
+			desc: {
+				'ja-JP': 'ミュートの期限',
+				'en-US': 'Expires at'
+			}
+		}
 	},
 
 	errors: {
@@ -43,11 +52,13 @@ export const meta = {
 			id: 'a4619cb2-5f23-484b-9301-94c903074e10'
 		},
 
+		/*
 		alreadyMuting: {
 			message: 'You are already muting that user.',
 			code: 'ALREADY_MUTING',
 			id: '7e7359cb-160c-4956-b08f-4d1c653cd007'
 		},
+		*/
 	}
 };
 
@@ -66,20 +77,29 @@ export default define(meta, async (ps, user) => {
 	});
 
 	// Check if already muting
-	const exist = await getMute(muter._id, mutee._id);
+	const exist = await Mute.findOne({
+		muterId: transform(muter._id),
+		muteeId: transform(mutee._id)
+	});
 
-	if (exist !== null) {
-		throw new ApiError(meta.errors.alreadyMuting);
+	// 既存でも既存の期限切れでも常に再採番
+	if (exist != null) {
+		await Mute.remove({
+			_id: exist._id
+		});
 	}
 
 	// Create mute
-	await Mute.insert({
+	const mute = await Mute.insert({
 		createdAt: new Date(),
 		muterId: muter._id,
 		muteeId: mutee._id,
+		expiresAt: ps.expiresAt ? new Date(ps.expiresAt) : undefined
 	});
 
 	publishMutingChanged(muter._id);
+
+	if (ps.expiresAt) createExpireMuteJob(mute);
 
 	return;
 });

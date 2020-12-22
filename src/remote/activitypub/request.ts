@@ -8,7 +8,6 @@ import * as Got from 'got';
 
 import config from '../../config';
 import { ILocalUser } from '../../models/user';
-import { publishApLogStream } from '../../services/stream';
 import { httpsAgent, getAgentByUrl } from '../../misc/fetch';
 
 export default async (user: ILocalUser, url: string, object: any) => {
@@ -60,15 +59,6 @@ export default async (user: ILocalUser, url: string, object: any) => {
 
 		req.end(data);
 	});
-
-	//#region Log
-	publishApLogStream({
-		direction: 'out',
-		activity: object.type,
-		host: null,
-		actor: user.username
-	});
-	//#endregion
 };
 
 /**

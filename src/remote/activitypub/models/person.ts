@@ -147,6 +147,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 			notesCount,
 			name: person.name,
 			isLocked: person.manuallyApprovesFollowers,
+			isExplorable: !!person.discoverable,
 			username: person.preferredUsername,
 			usernameLower: person.preferredUsername.toLowerCase(),
 			host,
@@ -388,6 +389,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 		isOrganization: object.type == 'Organization',
 		isCat: (person as any).isCat === true,
 		isLocked: person.manuallyApprovesFollowers,
+		isExplorable: !!person.discoverable,
 		publicKey: {
 			id: person.publicKey.id,
 			publicKeyPem: person.publicKey.publicKeyPem

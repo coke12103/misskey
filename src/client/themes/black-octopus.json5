@@ -1,0 +1,18 @@
+{
+	id: '2d3728df-b719-4fc6-b098-ad5462969edc',
+
+	name: 'Black octopus',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#744bc1',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

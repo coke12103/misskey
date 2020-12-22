@@ -142,6 +142,10 @@ export default Vue.extend({
 					userId: this.user.id
 				}).then(() => {
 					this.user.isMuted = false;
+					this.$root.dialog({
+						type: 'success',
+						splash: true
+					});
 				}, () => {
 					this.$root.dialog({
 						type: 'error',
@@ -149,12 +153,33 @@ export default Vue.extend({
 					});
 				});
 			} else {
-				if (!await this.getConfirmed(this.$t('mute-confirm'))) return;
+				const confirm = await this.$root.dialog({
+					type: 'warning',
+					showCancelButton: true,
+					title: this.$t('confirm'),
+					text: this.$t('mute-confirm'),
+					select: {
+						items: [0, 300, 1800, 3600, 3600*3, 3600*6, 86400, 86400*3, 86400*7].map(x => ({
+							value: x,
+							text: this.$t(`timeSpans.${x}`)
+						})),
+						default: 0,
+					},
+				});
+
+				if (confirm.canceled) return;
+
+				const expiresAt = confirm.result > 0 ? Date.now() + (confirm.result * 1000) : undefined;
 
 				this.$root.api('mute/create', {
-					userId: this.user.id
+					userId: this.user.id,
+					expiresAt
 				}).then(() => {
 					this.user.isMuted = true;
+					this.$root.dialog({
+						type: 'success',
+						splash: true
+					});
 				}, () => {
 					this.$root.dialog({
 						type: 'error',
@@ -172,6 +197,10 @@ export default Vue.extend({
 					userId: this.user.id
 				}).then(() => {
 					this.user.isBlocking = false;
+					this.$root.dialog({
+						type: 'success',
+						splash: true
+					});
 				}, () => {
 					this.$root.dialog({
 						type: 'error',
@@ -185,6 +214,10 @@ export default Vue.extend({
 					userId: this.user.id
 				}).then(() => {
 					this.user.isBlocking = true;
+					this.$root.dialog({
+						type: 'success',
+						splash: true
+					});
 				}, () => {
 					this.$root.dialog({
 						type: 'error',
@@ -259,7 +292,7 @@ export default Vue.extend({
 			const confirm = await this.$root.dialog({
 				type: 'warning',
 				showCancelButton: true,
-				title: 'confirm',
+				title: this.$t('confirm'),
 				text,
 			});
 

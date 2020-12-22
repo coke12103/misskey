@@ -91,6 +91,7 @@ common:
   edit: 'Edit'
   favorites: "Favorites"
   noteReactions: "Reacted notes"
+  poll_finished: "Poll finished"
   permissions:
     "read:account": "View your account information"
     "write:account": "Edit your account information"
@@ -160,6 +161,11 @@ common:
     thursday: "Thursday"
     friday: "Friday"
     saturday: "Saturday"
+  remaining:
+    days: "{d} days {h} hours remaining"
+    hours: "{h} hours {m} mins remaining"
+    minutes: "{m} mins {s} secs remaining"
+    seconds: "{s} secs remaining"
   reactions:
     like: "Like"
     love: "Love"
@@ -621,6 +627,17 @@ common/views/components/user-menu.vue:
   unhide-renote: "Unhide Renote"
   hide-renote-confirm: "Hide Renote from this user?"
   unhide-renote-confirm: "Unhide Renote from this user?"
+  confirm: "Confirm"
+  timeSpans:
+    0: "Unlimited"
+    300: "5 minutes"
+    1800: "30 minutes"
+    3600: "1 hour"
+    10800: "3 hours"
+    21600: "6 hours"
+    86400: "1 day"
+    259200: "3 days"
+    604800: "1 week"
 common/views/components/list-menu.vue:
   push-to-list: "Add to list"
   pull-from-list: "Remove from {}"
@@ -731,6 +748,7 @@ common/views/components/notification-settings.vue:
   quote: "Quote"
   reaction: "Reaction"
   poll_vote: "Vote"
+  poll_finished: "Poll finished"
   highlight: "Highlight"
   mark-as-read-all-notifications: "Mark all notifications as read"
   mark-as-read-all-unread-notes: "Mark all posts as read"
@@ -806,6 +824,7 @@ common/views/components/profile-editor.vue:
   careful-massive: "Massive follow requests pending approval"
   auto-accept-followed: "Automatically approve follows from the people you follow"
   avoid-search-index: "Avoid search engine index"
+  isExplorable: "Show in explore"
   hideFollows-none: "Not hide Following / Followed list"
   hideFollows-follower: "Show Following / Followed list only to followers"
   hideFollows-always: "Always hide Following / Followed list"
@@ -1364,6 +1383,7 @@ admin/views/charts.vue:
   notes: "Posts"
   users: "Users"
   drive: "Media storage"
+  queue: "Queue"
   network: "Network"
   charts:
     federation-instances: "The number of instances: increase/decrease"
@@ -1381,6 +1401,8 @@ admin/views/charts.vue:
     drive-total: "Total usage of Drive"
     drive-files: "The number of files on the storage: increase/decrease"
     drive-files-total: "Total number of files on Drive"
+    queue-deliver: "Number of deliver queue processings"
+    queue-inbox: "Number of inbox queue processings"
     network-requests: "Requests"
     network-time: "Response time"
     network-usage: "Traffic"

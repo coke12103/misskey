@@ -1,0 +1,18 @@
+{
+	id: 'e5142639-2a98-42f1-b208-03399be8473b',
+
+	name: 'Black sakura',
+	author: 'mei23',
+	desc: '',
+
+	base: 'dark',
+
+	vars: {
+		primary: '#ce3a5e',
+		secondary: '#111111',
+		text: '#eeeeee',
+	},
+
+	props: {
+	},
+}

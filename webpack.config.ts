@@ -177,7 +177,6 @@ module.exports = {
 			]
 		})]
 	},
-	cache: true,
 	devtool: false, //'source-map',
 	mode: isProduction ? 'production' : 'development'
 };

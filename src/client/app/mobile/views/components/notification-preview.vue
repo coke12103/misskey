@@ -62,6 +62,14 @@
 		</div>
 	</template>
 
+	<template v-if="notification.type == 'poll_finished'">
+		<mk-avatar class="avatar" :user="notification.user"/>
+		<div class="text">
+			<p><fa icon="chart-pie"/><mk-user-name :user="notification.user"/></p>
+			<p class="note-ref"><fa icon="quote-left"/>{{ getNoteSummary(notification.note) }}<fa icon="quote-right"/></p>
+		</div>
+	</template>
+
 	<template v-if="notification.type == 'highlight'">
 		<mk-avatar class="avatar" :user="notification.note.user"/>
 		<div class="text">
@@ -143,5 +151,18 @@ export default Vue.extend({
 		.text p [data-icon]
 			color #fff
 
+	&.poll_vote, &.poll_finished
+		.text
+			color var(--text)
+			align-items center
+
+		&.poll_finished
+			.avatar
+				display none
+
+			.text
+				float none
+				width auto
+				padding 0
 </style>
 

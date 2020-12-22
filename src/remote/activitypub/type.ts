@@ -216,6 +216,7 @@ export interface IApPerson extends IObject {
 	name: string;
 	preferredUsername: string;
 	manuallyApprovesFollowers: boolean;
+	discoverable?: boolean;
 	inbox: string;
 	sharedInbox?: string;
 	publicKey: any;

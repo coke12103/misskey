@@ -3,6 +3,7 @@ import request from '../../remote/activitypub/request';
 import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
+import queueChart from '../../services/chart/queue';
 import Logger from '../../services/logger';
 import { UpdateInstanceinfo } from '../../services/update-instanceinfo';
 import { isBlockedHost, isClosedHost } from '../../misc/instance-info';
@@ -11,6 +12,15 @@ import { DeliverJobData } from '..';
 const logger = new Logger('deliver');
 
 let latest: string = null;
+let counts: number = 0;
+
+// Bulk write
+setInterval(() => {
+	if (counts === 0) return;
+	queueChart.update(counts, 0);
+	counts = 0;
+}, 5000);
+//#endregion
 
 export default async (job: Bull.Job<DeliverJobData>) => {
 	const { protocol, host } = new URL(job.data.to);
@@ -46,6 +56,7 @@ export default async (job: Bull.Job<DeliverJobData>) => {
 			UpdateInstanceinfo(i);
 
 			instanceChart.requestSent(i.host, true);
+			counts += 1;
 		});
 
 		return 'Success';
@@ -61,6 +72,7 @@ export default async (job: Bull.Job<DeliverJobData>) => {
 			});
 
 			instanceChart.requestSent(i.host, false);
+			counts += 1;
 		});
 
 		if (res != null && res.hasOwnProperty('statusCode')) {

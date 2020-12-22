@@ -5,31 +5,42 @@ import Channel from '../channel';
 
 export default class extends Channel {
 	public readonly chName = 'hashtag';
+	public static shouldShare = false;
 	public static requireCredential = false;
+	private q: string[][] | null = null;
 
 	@autobind
 	public async init(params: any) {
-		const q: string[][] = params.q;
+		this.q = params.q;
 
-		if (q == null) return;
+		if (this.q == null) return;
 
 		// Subscribe stream
-		this.subscriber.on('hashtag', async note => {
-			const noteTags = note.tags.map((t: string) => t.toLowerCase());
-			const matched = q.some(tags => tags.every(tag => noteTags.includes(tag.toLowerCase())));
-			if (!matched) return;
+		this.subscriber.on('notesStream', this.onNote);
+	}
 
-			// Renoteなら再pack
-			if (note.renoteId != null) {
-				note.renote = await pack(note.renoteId, this.user, {
-					detail: true
-				});
-			}
+	@autobind
+	private async onNote(note: any) {
+		const noteTags = note.tags ? note.tags.map((t: string) => t.toLowerCase()) : [];
+		const matched = this.q!.some(tags => tags.every(tag => noteTags.includes(tag.toLowerCase())));
+		if (!matched) return;
 
-			// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-			if (shouldMuteThisNote(note, this.mutedUserIds)) return;
+		// Renoteなら再pack
+		if (note.renoteId != null) {	// 来るのか？
+			note.renote = await pack(note.renoteId, this.user, {
+				detail: true
+			});
+		}
 
-			this.send('note', note);
-		});
+		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
+		if (shouldMuteThisNote(note, this.mutedUserIds)) return;
+
+		this.send('note', note);
+	}
+
+	@autobind
+	public dispose() {
+		// Unsubscribe events
+		this.subscriber.off('notesStream', this.onNote);
 	}
 }

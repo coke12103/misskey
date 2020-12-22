@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import define from '../../../define';
-import { deliverQueue, inboxQueue } from '../../../../../queue';
+import { deliverQueue, inboxQueue, dbQueue } from '../../../../../queue';
 import * as Bull from 'bull';
 
 export const meta = {
@@ -29,6 +29,7 @@ export default define(meta, async (ps) => {
 	const queue =
 		ps.domain === 'deliver' ? deliverQueue :
 		ps.domain === 'inbox' ? inboxQueue :
+		ps.domain === 'db' ? dbQueue :
 		null;
 
 	const jobs = await (queue as Bull.Queue<any>).getJobs([ps.state], 0, ps.limit);
@@ -43,6 +44,9 @@ export default define(meta, async (ps) => {
 			attempts: job.attemptsMade,
 			maxAttempts: job.opts ? job.opts.attempts : 0,
 			timestamp: job.timestamp,
+
+			name: job.name,
+			delay: job.opts.delay
 		};
 	});
 });

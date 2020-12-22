@@ -82,7 +82,6 @@ export default define(meta, async (ps, me) => {
 	// 隠すインスタンス
 	const hideInstances = await Instance.find({
 		$or: [
-			{ isMarkedAsClosed: true },
 			{ isBlocked: true }
 		]
 	}, {

@@ -30,6 +30,7 @@ export async function findJoinedNotes(query: any, sort: any, limit: number, maxT
 						bannerId: true,
 						emojis: true,
 						avoidSearchIndex: true,
+						isExplorable: true,
 						hideFollows: true,
 						isCat: true,
 						isBot: true,

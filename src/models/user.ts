@@ -129,6 +129,11 @@ type IUserBase = {
 	noFederation?: boolean;
 
 	/**
+	 * みつけるに表示するか
+	 */
+	isExplorable?: boolean;
+
+	/**
 	 * このアカウントに届いているフォローリクエストの数
 	 */
 	pendingReceivedFollowRequestsCount: number;
@@ -251,7 +256,11 @@ export function isValidBirthday(birthday: string): boolean {
 export async function getMute(muterId: mongo.ObjectId | string, muteeId: mongo.ObjectId | string) {
 	return await Mute.findOne({
 		muterId: transform(muterId),
-		muteeId: transform(muteeId)
+		muteeId: transform(muteeId),
+		$or: [
+			{ expiresAt: null },
+			{ expiresAt: { $lt: new Date() }}
+		]
 	});
 }
 
@@ -283,7 +292,11 @@ export async function getRelation(me: mongo.ObjectId, target: mongo.ObjectId) {
 		}),
 		Mute.count({
 			muterId: me,
-			muteeId: target
+			muteeId: target,
+			$or: [
+				{ expiresAt: null },
+				{ expiresAt: { $gt: new Date() }}
+			]
 		}),
 		UserFilter.findOne({
 			ownerId: me,
@@ -337,6 +350,7 @@ export const pack = async (
 		bannerId: true,
 		emojis: true,
 		avoidSearchIndex: true,
+		isExplorable: true,
 		hideFollows: true,
 		isCat: true,
 		isBot: true,

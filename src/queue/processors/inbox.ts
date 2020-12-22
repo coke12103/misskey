@@ -5,11 +5,11 @@ import perform from '../../remote/activitypub/perform';
 import { resolvePerson } from '../../remote/activitypub/models/person';
 import { toUnicode } from 'punycode';
 import { URL } from 'url';
-import { publishApLogStream } from '../../services/stream';
 import Logger from '../../services/logger';
 import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
+import queueChart from '../../services/chart/queue';
 import { getApId } from '../../remote/activitypub/type';
 import { UpdateInstanceinfo } from '../../services/update-instanceinfo';
 import { isBlockedHost } from '../../misc/instance-info';
@@ -22,6 +22,16 @@ import resolveUser from '../../remote/resolve-user';
 import config from '../../config';
 
 const logger = new Logger('inbox');
+
+let counts: number = 0;
+
+// Bulk write
+setInterval(() => {
+	if (counts === 0) return;
+	queueChart.update(0, counts);
+	counts = 0;
+}, 5000);
+//#endregion
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
@@ -129,14 +139,6 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 		}
 	}
 
-	//#region Log/stats
-	publishApLogStream({
-		direction: 'in',
-		activity: activity.type,
-		host: user.host,
-		actor: user.username
-	});
-
 	// Update stats
 	registerOrFetchInstanceDoc(host).then(i => {
 		const set = {
@@ -153,6 +155,7 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 		UpdateInstanceinfo(i, job.data.request);
 
 		instanceChart.requestReceived(i.host);
+		counts += 1;
 	});
 	//#endregion
 

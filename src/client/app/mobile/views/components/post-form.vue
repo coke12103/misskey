@@ -227,6 +227,9 @@ export default Vue.extend({
 			if (!this.inside) {
 				this.$nextTick(this.focus);
 			}
+
+			const len = this.text.length;
+			if (len > 0 && this.$refs.text) (this.$refs.text as HTMLTextAreaElement).setSelectionRange(len, len);
 		});
 	},
 

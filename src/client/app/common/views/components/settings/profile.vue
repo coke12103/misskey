@@ -89,6 +89,7 @@
 				<ui-switch v-model="carefulMassive" :disabled="isLocked || refuseFollow" @change="save(false)">{{ $t('careful-massive') }}</ui-switch>
 				<ui-switch v-model="autoAcceptFollowed" :disabled="!isLocked && !refuseFollow && !carefulBot && !carefulRemote && !carefulMassive" @change="save(false)">{{ $t('auto-accept-followed') }}</ui-switch>
 				<ui-switch v-model="avoidSearchIndex" @change="save(false)">{{ $t('avoid-search-index') }}</ui-switch>
+				<ui-switch v-model="isExplorable" @change="save(false)">{{ $t('isExplorable') }}</ui-switch>
 				<ui-select v-model="hideFollows" @input="save(false)">
 					<option value="">{{ $t('hideFollows-none') }}</option>
 					<option value="follower">{{ $t('hideFollows-follower') }}</option>
@@ -175,6 +176,7 @@ export default Vue.extend({
 			carefulMassive: true,
 			autoAcceptFollowed: false,
 			avoidSearchIndex: false,
+			isExplorable: false,
 			hideFollows: '',
 			noFederation: false,
 			fieldName0 : null,
@@ -229,6 +231,7 @@ export default Vue.extend({
 		this.carefulMassive = this.$store.state.i.carefulMassive;
 		this.autoAcceptFollowed = this.$store.state.i.autoAcceptFollowed;
 		this.avoidSearchIndex = this.$store.state.i.avoidSearchIndex;
+		this.isExplorable = this.$store.state.i.isExplorable;
 		this.hideFollows = this.$store.state.i.hideFollows;
 		this.noFederation = this.$store.state.i.noFederation;
 
@@ -328,6 +331,7 @@ export default Vue.extend({
 				carefulMassive: !!this.carefulMassive,
 				autoAcceptFollowed: !!this.autoAcceptFollowed,
 				avoidSearchIndex: !!this.avoidSearchIndex,
+				isExplorable: !!this.isExplorable,
 				hideFollows: this.hideFollows || '',
 				fields,
 			}).then(i => {
