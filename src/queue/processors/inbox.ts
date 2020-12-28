@@ -9,11 +9,10 @@ import Logger from '../../services/logger';
 import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
-import queueChart from '../../services/chart/queue';
 import { getApId } from '../../remote/activitypub/type';
 import { UpdateInstanceinfo } from '../../services/update-instanceinfo';
 import { isBlockedHost } from '../../misc/instance-info';
-import { InboxJobData } from '..';
+import { InboxJobData } from '../type';
 import DbResolver from '../../remote/activitypub/db-resolver';
 import { inspect } from 'util';
 import { extractApHost } from '../../misc/convert-host';
@@ -22,16 +21,6 @@ import resolveUser from '../../remote/resolve-user';
 import config from '../../config';
 
 const logger = new Logger('inbox');
-
-let counts: number = 0;
-
-// Bulk write
-setInterval(() => {
-	if (counts === 0) return;
-	queueChart.update(0, counts);
-	counts = 0;
-}, 5000);
-//#endregion
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
@@ -155,7 +144,6 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 		UpdateInstanceinfo(i, job.data.request);
 
 		instanceChart.requestReceived(i.host);
-		counts += 1;
 	});
 	//#endregion
 

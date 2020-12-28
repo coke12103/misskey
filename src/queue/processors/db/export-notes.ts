@@ -8,7 +8,7 @@ import Note, { INote } from '../../../models/note';
 import { addFile } from '../../../services/drive/add-file';
 import User from '../../../models/user';
 import dateFormat = require('dateformat');
-import { DbUserJobData } from '../..';
+import { DbUserJobData } from '../../type';
 
 const logger = queueLogger.createSubLogger('export-notes');
 

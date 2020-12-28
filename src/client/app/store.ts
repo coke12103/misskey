@@ -48,6 +48,8 @@ const defaultDeviceSettings = Object.assign({
 	deck: null,
 	deckMode: false,
 	deckColumnAlign: 'center',
+	deckTemporaryColumnPosition: 'right',
+	deckTemporaryColumnIndex: 1,
 	roundedCorners: true,
 	reduceMotion: false,
 	visibilityColoring: 'left',
@@ -201,6 +203,50 @@ export default (os: MiOS) => new Vuex.Store({
 					state.deck.layout = state.deck.layout.filter(ids => ids.length > 0);
 				},
 
+				changeTemporaryColumn(state, id) {
+					// ドラッグ先の縦位置
+					const x = state.deck.layout.findIndex(ids => ids.indexOf(id) != -1);
+					const leftEdge = x === 0;
+					const rightEdge = x === state.deck.layout.length - 1;
+
+					// 左端固定以外から左端に移動したら左端固定にする
+					if (state.deckTemporaryColumnPosition !== 'left' && leftEdge) {
+						state.deckTemporaryColumnPosition = 'left';
+						state.deckTemporaryColumnIndex = 1;
+						return;
+					}
+
+					// 右端固定以外から右端に移動したら右端固定にする
+					if (state.deckTemporaryColumnPosition !== 'right' && rightEdge) {
+						state.deckTemporaryColumnPosition = 'right';
+						state.deckTemporaryColumnIndex = 1;
+						return;
+					}
+
+					// 左端固定から移動した
+					if (leftEdge) {
+						state.deckTemporaryColumnPosition = 'specify';
+						state.deckTemporaryColumnIndex = x + 1;
+						return;
+					}
+
+					// 右端固定から移動した
+					if (rightEdge) {
+						state.deckTemporaryColumnPosition = 'specify';
+						state.deckTemporaryColumnIndex = x;
+						return;
+					}
+
+					// 中程から移動した
+					if (x < state.deckTemporaryColumnIndex) {
+						state.deckTemporaryColumnPosition = 'specify';
+						state.deckTemporaryColumnIndex = x;
+					} else {
+						state.deckTemporaryColumnPosition = 'specify';
+						state.deckTemporaryColumnIndex = x + 1;
+					}
+				},
+
 				swapDeckColumn(state, x) {
 					const a = x.a;
 					const b = x.b;
@@ -210,6 +256,9 @@ export default (os: MiOS) => new Vuex.Store({
 					const bY = state.deck.layout[bX].findIndex(id => id == b);
 					state.deck.layout[aX][aY] = b;
 					state.deck.layout[bX][bY] = a;
+
+					// なんかしないと変更が反映されない
+					state.deck.layout = state.deck.layout.map(x => x);
 				},
 
 				swapLeftDeckColumn(state, id) {

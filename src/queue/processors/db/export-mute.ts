@@ -9,7 +9,7 @@ import User from '../../../models/user';
 import dateFormat = require('dateformat');
 import Mute from '../../../models/mute';
 import { getFullApAccount } from '../../../misc/convert-host';
-import { DbUserJobData } from '../..';
+import { DbUserJobData } from '../../type';
 
 const logger = queueLogger.createSubLogger('export-mute');
 

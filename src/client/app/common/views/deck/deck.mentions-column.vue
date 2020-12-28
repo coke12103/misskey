@@ -1,5 +1,5 @@
 <template>
-<x-column :name="name" :column="column" :is-stacked="isStacked">
+<x-column :name="name" :column="column" :is-stacked="isStacked" :pos="pos">
 	<template #header><fa icon="at"/>{{ name }}</template>
 
 	<x-mentions ref="tl"/>
@@ -27,7 +27,12 @@ export default Vue.extend({
 		isStacked: {
 			type: Boolean,
 			required: true
-		}
+		},
+		pos: {
+			type: Object,
+			required: false,
+			default: () => {}
+		},
 	},
 
 	computed: {

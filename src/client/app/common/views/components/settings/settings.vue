@@ -71,6 +71,23 @@
 				<ui-radio v-model="deckColumnAlign" value="flexible">{{ $t('@._settings.deck-column-align-flexible') }}</ui-radio>
 			</section>
 			<section>
+				<header>{{ $t('@._settings.deckTemporaryColumnPosition') }}</header>
+				<ui-radio v-model="deckTemporaryColumnPosition" value="left">{{ $t('@._settings.deckTemporaryColumnPosition-left') }}</ui-radio>
+				<ui-radio v-model="deckTemporaryColumnPosition" value="right">{{ $t('@._settings.deckTemporaryColumnPosition-right') }}</ui-radio>
+				<ui-radio v-model="deckTemporaryColumnPosition" value="specify">{{ $t('@._settings.deckTemporaryColumnPosition-specify') }}</ui-radio>
+				<ui-select v-if="deckTemporaryColumnPosition === 'specify'" v-model="deckTemporaryColumnIndex" style="margin-bottom: 0 !important;">
+					<option value="1">{{ $t('@._settings.deckTemporaryColumnIndex-1') }}</option>
+					<option value="2">{{ $t('@._settings.deckTemporaryColumnIndex-2') }}</option>
+					<option value="3">{{ $t('@._settings.deckTemporaryColumnIndex-3') }}</option>
+					<option value="4">{{ $t('@._settings.deckTemporaryColumnIndex-4') }}</option>
+					<option value="5">{{ $t('@._settings.deckTemporaryColumnIndex-5') }}</option>
+					<option value="6">{{ $t('@._settings.deckTemporaryColumnIndex-6') }}</option>
+					<option value="7">{{ $t('@._settings.deckTemporaryColumnIndex-7') }}</option>
+					<option value="8">{{ $t('@._settings.deckTemporaryColumnIndex-8') }}</option>
+				</ui-select>
+			</section>
+
+			<section>
 				<header>{{ $t('@._settings.visibilityColoring') }}</header>
 				<ui-radio v-model="visibilityColoring" value="none">{{ $t('@._settings.visibilityColoring-none') }}</ui-radio>
 				<ui-radio v-model="visibilityColoring" value="bg">{{ $t('@._settings.visibilityColoring-bg') }}</ui-radio>
@@ -433,6 +450,16 @@ export default Vue.extend({
 		deckColumnAlign: {
 			get() { return this.$store.state.device.deckColumnAlign; },
 			set(value) { this.$store.commit('device/set', { key: 'deckColumnAlign', value }); }
+		},
+
+		deckTemporaryColumnPosition: {
+			get() { return this.$store.state.device.deckTemporaryColumnPosition || 'right'; },
+			set(value) { this.$store.commit('device/set', { key: 'deckTemporaryColumnPosition', value }); }
+		},
+
+		deckTemporaryColumnIndex: {
+			get() { return this.$store.state.device.deckTemporaryColumnIndex || 1; },
+			set(value) { this.$store.commit('device/set', { key: 'deckTemporaryColumnIndex', value }); }
 		},
 
 		visibilityColoring: {

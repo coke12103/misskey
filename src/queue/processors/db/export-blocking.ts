@@ -9,7 +9,7 @@ import User from '../../../models/user';
 import dateFormat = require('dateformat');
 import Blocking from '../../../models/blocking';
 import { getFullApAccount } from '../../../misc/convert-host';
-import { DbUserJobData } from '../..';
+import { DbUserJobData } from '../../type';
 
 const logger = queueLogger.createSubLogger('export-blocking');
 

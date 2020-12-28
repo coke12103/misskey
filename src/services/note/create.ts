@@ -167,6 +167,11 @@ export default async (user: IUser, data: Option, silent = false) => {
 		throw 'Renote target is not public or home';
 	}
 
+	// Renote/Quote対象がホームだったらホームに
+	if (data.renote && data.renote.visibility === 'home') {
+		data.visibility = 'home';
+	}
+
 	// PureRenoteの最大公開範囲はHomeにする
 	if (isPureRenote && data.visibility === 'public') {
 		data.visibility = 'home';

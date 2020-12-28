@@ -2,13 +2,13 @@ import * as mongo from 'mongodb';
 import * as Bull from 'bull';
 import { queueLogger } from '../../logger';
 import Note from '../../../models/note';
-import { NotifyPollFinishedData } from '../..';
+import { NotifyPollFinishedJobData } from '../../type';
 import { createNotification } from '../../../services/create-notification';
 import { getInstanceActor } from '../../../services/instance-actor';
 
 const logger = queueLogger.createSubLogger('notify-poll-finished');
 
-export async function notifyPollFinished(job: Bull.Job<NotifyPollFinishedData>): Promise<string> {
+export async function notifyPollFinished(job: Bull.Job<NotifyPollFinishedJobData>): Promise<string> {
 	logger.info(`${job.data.noteId} for ${job.data.userId} ...`);
 
 	const note = await Note.findOne(job.data.noteId);

@@ -5,7 +5,9 @@
 import * as fs from 'fs';
 import * as webpack from 'webpack';
 import rndstr from 'rndstr';
+import * as chalk from 'chalk';
 const { VueLoaderPlugin } = require('vue-loader');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 class WebpackOnBuildPlugin {
@@ -128,7 +130,10 @@ module.exports = {
 		}]
 	},
 	plugins: [
-		new webpack.ProgressPlugin({}),
+		new ProgressBarPlugin({
+			format: chalk`  {cyan.bold webpack} {bold [}:bar{bold ]} {green.bold :percent} :msg :elapseds`,
+			clear: false
+		}),
 		new webpack.DefinePlugin({
 			_CONSTANTS_: JSON.stringify(constants),
 			_VERSION_: JSON.stringify(version),

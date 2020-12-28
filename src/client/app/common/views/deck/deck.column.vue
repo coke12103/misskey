@@ -46,6 +46,11 @@ export default Vue.extend({
 			required: false,
 			default: false
 		},
+		pos: {
+			type: Object,
+			required: false,
+			default: () => {}
+		},
 		name: {
 			type: String,
 			required: false
@@ -182,37 +187,51 @@ export default Vue.extend({
 						this.$store.commit('device/renameDeckColumn', { id: this.column.id, name });
 					});
 				}
-			}, null, {
+			},
+			// アイテムが1つなら区切り線は表示しない
+			this.pos?.alone ? undefined : null,
+			// 左に移動
+			this.pos?.first ? undefined : {
 				icon: 'arrow-left',
 				text: this.$t('swap-left'),
 				action: () => {
 					this.$store.commit('device/swapLeftDeckColumn', this.column.id);
 				}
-			}, {
+			},
+			// 右に移動
+			this.pos?.last ? undefined : {
 				icon: 'arrow-right',
 				text: this.$t('swap-right'),
 				action: () => {
 					this.$store.commit('device/swapRightDeckColumn', this.column.id);
 				}
-			}, this.isStacked ? {
+			},
+			// 上に移動
+			this.pos?.top ? undefined : {
 				icon: faArrowUp,
 				text: this.$t('swap-up'),
 				action: () => {
 					this.$store.commit('device/swapUpDeckColumn', this.column.id);
 				}
-			} : undefined, this.isStacked ? {
+			},
+			// 下に移動
+			this.pos?.bottom ? undefined : {
 				icon: faArrowDown,
 				text: this.$t('swap-down'),
 				action: () => {
 					this.$store.commit('device/swapDownDeckColumn', this.column.id);
 				}
-			} : undefined, null, {
+			},
+			// 左に重ねる
+			this.pos?.first ? undefined : {
 				icon: ['far', 'window-restore'],
 				text: this.$t('stack-left'),
 				action: () => {
 					this.$store.commit('device/stackLeftDeckColumn', this.column.id);
 				}
-			}, this.isStacked ? {
+			},
+			// 右に出す
+			this.isStacked ? {
 				icon: faWindowMaximize,
 				text: this.$t('pop-right'),
 				action: () => {
@@ -260,15 +279,14 @@ export default Vue.extend({
 		},
 
 		onDragstart(e) {
-			// テンポラリカラムはドラッグさせない
-			if (this.isTemporaryColumn) {
-				e.preventDefault();
-				return;
-			}
-
 			e.dataTransfer.effectAllowed = 'move';
-			e.dataTransfer.setData('mk-deck-column', this.column.id);
-			this.dragging = true;
+			e.dataTransfer.setData('mk-deck-column', this.isTemporaryColumn ? 'TEMP' : this.column.id);
+
+			// Chromeのバグで、Dragstartハンドラ内ですぐにDOMを変更する(=リアクティブなプロパティを変更する)とDragが終了してしまう
+			// SEE: https://stackoverflow.com/questions/19639969/html5-dragend-event-firing-immediately
+			setTimeout(() => {
+				this.dragging = true;
+			}, 10);
 		},
 
 		onDragend(e) {
@@ -305,6 +323,12 @@ export default Vue.extend({
 			this.$root.$emit('deck.column.dragEnd');
 
 			const id = e.dataTransfer.getData('mk-deck-column');
+
+			if (id === 'TEMP') {
+				this.$store.commit('device/changeTemporaryColumn', this.column.id);
+				return;
+			}
+
 			if (id != null && id != '') {
 				this.$store.commit('device/swapDeckColumn', {
 					a: this.column.id,
