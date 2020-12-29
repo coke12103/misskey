@@ -1,6 +1,8 @@
 <template>
 <time class="mk-time" :title="absolute">
 	<span v-if=" mode == 'relative' ">{{ relative }}</span>
+	<span v-if=" mode == 'absolute_smart'">{{ absolute_smart }}</span>
+	<span v-if=" mode == 'default_mode'">{{ default_mode }}</span>
 	<span v-if=" mode == 'absolute' ">{{ absolute }}</span>
 	<span v-if=" mode == 'detail' ">{{ absolute }} ({{ relative }})</span>
 </time>
@@ -19,7 +21,7 @@ export default Vue.extend({
 		},
 		mode: {
 			type: String,
-			default: 'relative'
+			default: 'default_mode'
 		}
 	},
 	data() {
@@ -32,8 +34,25 @@ export default Vue.extend({
 		_time(): Date {
 			return typeof this.time == 'string' ? new Date(this.time) : this.time;
 		},
+		useAbsoluteTime(): bool {
+			return this.$store.state.device.useAbsoluteTime;
+		},
+		default_mode(): string {
+			return this.useAbsoluteTime ? this.absolute_smart : this.relative;
+		},
 		absolute(): string {
 			return this._time.toLocaleString();
+		},
+		absolute_smart(): string{
+			const time = this._time;
+
+			const time_zero = new Date(this._time.toDateString()).getTime();
+			const today_zero = new Date(this.now.toDateString()).getTime();
+
+			const abs_date = `${time.getFullYear()}/${('0' + (time.getMonth() + 1)).slice(-2)}/${('0' + time.getDate()).slice(-2)}`;
+			const abs_time = `${('0' + time.getHours()).slice(-2)}:${('0' + time.getMinutes()).slice(-2)}:${('0' + time.getSeconds()).slice(-2)}`;
+
+			return time_zero == today_zero ? abs_time : `${abs_date} ${abs_time}`;
 		},
 		relative(): string {
 			const time = this._time;
@@ -52,12 +71,12 @@ export default Vue.extend({
 		}
 	},
 	created() {
-		if (this.mode == 'relative' || this.mode == 'detail') {
+		if (this.mode == 'relative' || this.mode == 'detail' || this.mode == 'absolute_smart' || this.mode == 'default_mode') {
 			this.tickId = window.requestAnimationFrame(this.tick);
 		}
 	},
 	destroyed() {
-		if (this.mode === 'relative' || this.mode === 'detail') {
+		if (this.mode === 'relative' || this.mode === 'detail' || this.mode == 'absolute_smart' || this.mode == 'default_mode') {
 			window.clearTimeout(this.tickId);
 		}
 	},

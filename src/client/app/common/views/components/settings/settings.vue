@@ -53,6 +53,7 @@
 				<ui-switch v-model="disableAnimatedMfm">{{ $t('@._settings.disable-animated-mfm') }}</ui-switch>
 				<ui-switch v-model="disableShowingAnimatedImages">{{ $t('@._settings.disable-showing-animated-images') }}</ui-switch>
 				<ui-switch v-model="disableShowingInstanceInfo">{{ $t('@._settings.disableShowingInstanceInfo') }}</ui-switch>
+				<ui-switch v-model="useAbsoluteTime">{{ $t('@._settings.useAbsoluteTime') }}</ui-switch>
 			</section>
 			<section v-if="$root.isMobile">
 				<header>{{ $t('@._settings.post-style') }}</header>
@@ -661,6 +662,11 @@ export default Vue.extend({
 		disableShowingInstanceInfo: {
 			get() { return !!this.$store.state.device.disableShowingInstanceInfo; },
 			set(value) { this.$store.commit('device/set', { key: 'disableShowingInstanceInfo', value }); }
+		},
+
+		useAbsoluteTime: {
+			get() { return !!this.$store.state.device.useAbsoluteTime; },
+			set(value) { this.$store.commit('device/set', { key: 'useAbsoluteTime', value }); }
 		},
 
 		mobileNotificationPosition: {
