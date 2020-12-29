@@ -1,6 +1,6 @@
 <template>
 <div>
-	<ui-textarea class="" v-model="v"><mfm :text="value.text" :key="Math.random()" :plain="true" :nowrap="true" :is-note="false" :i="$store.state.i" /></ui-textarea>
+	<ui-textarea class="" v-model="v"><mfm :text="value.text" :key="Math.random()" :plain="true" :nowrap="true" :i="$store.state.i" /></ui-textarea>
 </div>
 </template>
 

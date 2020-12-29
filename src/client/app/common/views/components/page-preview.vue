@@ -3,9 +3,9 @@
 	<div class="thumbnail" v-if="page.eyeCatchingImage" :style="`background-image: url('${page.eyeCatchingImage.thumbnailUrl}')`"></div>
 	<article>
 		<header>
-			<h1 :title="page.title"><mfm :text="page.title" :key="page.title" :plain="true" :nowrap="true" :is-note="false" :i="$store.state.i" /></h1>
+			<h1 :title="page.title"><mfm :text="page.title" :key="page.title" :plain="true" :nowrap="true" :i="$store.state.i" /></h1>
 		</header>
-		<p v-if="page.summary" :title="page.summary"><mfm :text="page.summary" :key="page.summary" :plain="true" :nowrap="true" :is-note="false" :i="$store.state.i" /></p>
+		<p v-if="page.summary" :title="page.summary"><mfm :text="page.summary" :key="page.summary" :plain="true" :nowrap="true" :i="$store.state.i" /></p>
 		<footer>
 			<img class="icon" :src="page.user.avatarUrl"/>
 			<p>{{ page.user | userName }}</p>

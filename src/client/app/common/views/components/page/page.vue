@@ -1,7 +1,7 @@
 <template>
 <div class="iroscrza" :class="{ center: page.alignCenter, serif: page.font === 'serif' }">
 	<header v-if="showTitle">
-		<div class="title"><mfm :text="page.title" :key="page.title" :plain="true" :nowrap="true" :is-note="false" :i="$store.state.i" /></div>
+		<div class="title"><mfm :text="page.title" :key="page.title" :plain="true" :nowrap="true" :i="$store.state.i" /></div>
 	</header>
 
 	<div v-if="script">

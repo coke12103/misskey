@@ -71,12 +71,9 @@ export default Vue.extend({
 	},
 	methods: {
 		showImage(i: number) {
-			const viewer = this.$root.new(ImageViewer, {
+			this.$root.new(ImageViewer, {
 				images: this.images,
 				index: i,
-			});
-			this.$once('hook:beforeDestroy', () => {
-				viewer.close();
 			});
 		},
 		isImage(file: { type: string }) {
