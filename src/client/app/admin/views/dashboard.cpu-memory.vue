@@ -2,14 +2,14 @@
 <div class="zyknedwtlthezamcjlolyusmipqmjgxz">
 	<div>
 		<header>
-			<span><fa icon="microchip"/> CPU <span>{{ cpuP }}%</span></span>
+			<span><fa icon="microchip"/> CPU <span>{{ cpuP }}% (@ {{ cpuSpeed }}GHz)</span></span>
 			<span v-if="meta">{{ meta.cpu.model }}</span>
 		</header>
 		<div ref="cpu"></div>
 	</div>
 	<div>
 		<header>
-			<span><fa icon="memory"/> MEM <span>{{ memP }}%</span></span>
+			<span><fa icon="memory"/> MEM <span>{{ memP }}% ({{ memAvail | bytes(1) }} Available)</span></span>
 			<span v-if="meta"></span>
 		</header>
 		<div ref="mem"></div>
@@ -30,6 +30,8 @@ export default Vue.extend({
 			cpuChart: null,
 			memChart: null,
 			cpuP: '',
+			cpuSpeed: 0,
+			memAvail: 0,
 			memP: '',
 			meta: null
 		};
@@ -41,7 +43,7 @@ export default Vue.extend({
 				data: stats.map((x, i) => ({ x: i, y: x.cpu_usage }))
 			}]);
 			this.memChart.updateSeries([{
-				data: stats.map((x, i) => ({ x: i, y: (x.mem.used / x.mem.total) }))
+				data: stats.map((x, i) => ({ x: i, y: (x.mem.active / x.mem.total) }))
 			}]);
 		}
 	},
@@ -128,7 +130,9 @@ export default Vue.extend({
 			if (this.stats.length > 200) this.stats.shift();
 
 			this.cpuP = (stats.cpu_usage * 100).toFixed(0);
+			this.cpuSpeed = stats.cpu_speed.toFixed(2);
 			this.memP = (stats.mem.used / stats.mem.total * 100).toFixed(0);
+			this.memAvail = stats.mem.available;
 		},
 
 		onStatsLog(statsLog) {

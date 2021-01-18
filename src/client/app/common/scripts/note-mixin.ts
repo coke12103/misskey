@@ -33,6 +33,9 @@ export default (opts: Opts = {}) => ({
 
 	computed: {
 		keymap(): any {
+			if (!this.$store.state.device.enableKeyboardShortcutInNote) return {};
+
+			// TODO: ログインしてるかとか権限があるかとか一切チェックしてない
 			return {
 				'r': () => this.reply(true),
 				'e|a|plus': () => this.react(true),
@@ -110,6 +113,11 @@ export default (opts: Opts = {}) => ({
 	},
 
 	methods: {
+		toggleStayTl() {
+			const old = this.appearNote.stayTl
+			this.$set(this.appearNote, 'stayTl', !old)
+		},
+
 		reply(viaKeyboard = false) {
 			this.$root.$post({
 				reply: this.appearNote,
@@ -181,7 +189,7 @@ export default (opts: Opts = {}) => ({
 		del() {
 			this.$root.dialog({
 				type: 'warning',
-				text: this.$t('@.delete-confirm'),
+				text: (this.appearNote.userId == this.$store.state.i.id) ? this.$t('@.delete-confirm') : this.$t('@.deleteAsAdmin-confirm'),
 				showCancelButton: true
 			}).then(({ canceled }) => {
 				if (canceled) return;

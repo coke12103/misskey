@@ -180,7 +180,7 @@ export const meta = {
 			validator: $.optional.obj({
 				choices: $.arr($.str)
 					.unique()
-					.range(2, 10)
+					.range(2, 20)
 					.each(c => c.length > 0 && c.length <= 128),
 				multiple: $.optional.bool,
 				expiresAt: $.optional.nullable.num.int(),

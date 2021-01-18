@@ -94,6 +94,7 @@ export default define(meta, async (ps, me) => {
 		secure: config.https != null,
 		machine: os.hostname(),
 		os: os.platform(),
+		arch: os.arch(),
 		node: process.version,
 
 		cpu: {

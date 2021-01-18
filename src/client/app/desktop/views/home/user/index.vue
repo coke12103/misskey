@@ -46,7 +46,7 @@ export default Vue.extend({
 			this.fetching = true;
 			Progress.start();
 			this.$root.api('users/show', parseAcct(this.$route.params.user)).then(user => {
-				this.user = user;
+				if (this.$store.state.i || !user.host) this.user = user;
 				this.fetching = false;
 				Progress.done();
 			}).catch(() => {

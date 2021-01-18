@@ -158,3 +158,9 @@ themeColor: '#fb4e4e'
 
 # アップロードやリモート取得で処理できるファイルサイズの制限 (bytes)
 #maxFileSize: 262144000
+
+# サーバー情報を隠す (default: false)
+#hideServerInfo: true
+
+# 未認証ログインユーザーに対してリモートユーザーのコンテンツを表示する (default: false)
+#showRemoteForAnon: true

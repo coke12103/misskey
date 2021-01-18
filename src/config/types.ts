@@ -72,6 +72,10 @@ export type Source = {
 
 	icons?: Icons
 	themeColor?: string;
+
+	hideServerInfo?: boolean;
+
+	showRemoteForAnon?: boolean;
 };
 
 export type DriveConfig = {

@@ -40,6 +40,10 @@ export default async (endpoint: string, user: IUser, app: IApp, data: any, file?
 		});
 	}
 
+	if (ep.meta.requireCredential && user.isDeleted) {
+		throw new ApiError(accessDenied, { reason: 'Your account has been deleted.' });
+	}
+
 	if (ep.meta.requireCredential && user.isSuspended) {
 		throw new ApiError(accessDenied, { reason: 'Your account has been suspended.' });
 	}

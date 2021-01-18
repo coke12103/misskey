@@ -36,6 +36,7 @@ import DeliverManager from '../../remote/activitypub/deliver-manager';
 import { deliverToRelays } from '../relay';
 import { getIndexer, getWordIndexer } from '../../misc/mecab';
 import Following from '../../models/following';
+import { IActivity } from '../../remote/activitypub/type';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -389,7 +390,16 @@ export default async (user: IUser, data: Option, silent = false) => {
 		// AP deliver
 		if (isLocalUser(user)) {
 			(async () => {
-				const noteActivity = await renderNoteOrRenoteActivity(data, note, user);
+				let noteActivity: IActivity | null;
+
+				if (user.isSilenced && note.visibility === 'public') {
+					const n = Object.assign({}, note);
+					n.visibility = 'home';
+					noteActivity = await renderNoteOrRenoteActivity(data, n, user);
+				} else {
+					noteActivity = await renderNoteOrRenoteActivity(data, note, user);
+				}
+
 				const dm = new DeliverManager(user, noteActivity);
 
 				// メンションされたリモートユーザーに配送

@@ -38,7 +38,7 @@ function main() {
 
 	//#region Load config
 	const configLogger = bootLogger.createSubLogger('config');
-	let config;
+	let config: any;
 
 	try {
 		config = loadConfig();
@@ -59,20 +59,43 @@ function main() {
 	const st = getWorkerStrategies(config);
 	if (st.workers + st.servers + st.queues === 0) program.disableClustering = true;
 
-	if (cluster.isMaster || program.disableClustering) {
-		masterMain(config);
-
-		if (cluster.isMaster) {
+	if (program.disableClustering) {
+		masterMain(config).then(() => {
 			ev.mount();
-		}
 
-		if (program.daemons) {
-			serverStats();
-			queueStats();
-		}
-	}
+			if (program.daemons) {
+				serverStats();
+				queueStats();
+			}
 
-	if (cluster.isWorker || program.disableClustering) {
+			workerMain().then(() => {
+				bootLogger.succ(`Now listening on port ${config.port} on ${config.url}`, undefined, true);
+
+				// ユニットテストから起動された場合用
+				if (process.send) {
+					process.send('ok');
+				}
+			});
+		})
+	} else if (cluster.isMaster) {
+		masterMain(config).then(() => {
+			ev.mount();
+
+			if (program.daemons) {
+				serverStats();
+				queueStats();
+			}
+
+			spawnWorkers(config).then(() => {
+				bootLogger.succ(`Now listening on port ${config.port} on ${config.url}`, undefined, true);
+
+				// ユニットテストから起動された場合用
+				if (process.send) {
+					process.send('ok');
+				}
+			})
+		});
+	} else {
 		workerMain();
 	}
 }
@@ -119,12 +142,6 @@ async function masterMain(config: Config) {
 	}
 
 	bootLogger.succ('Misskey initialized');
-
-	if (!program.disableClustering) {
-		await spawnWorkers(config);
-	}
-
-	bootLogger.succ(`Now listening on port ${config.port} on ${config.url}`, null, true);
 }
 
 /**
@@ -136,16 +153,22 @@ async function workerMain() {
 	if (workerType === 'server') {
 		await require('./server').default();
 	} else if (workerType === 'queue') {
-		require('./queue').default();
+		await require('./queue').default();
 	} else {
 		await require('./server').default();
-		require('./queue').default();
+		await require('./queue').default();
 	}
 
 	if (cluster.isWorker) {
 		// Send a 'ready' message to parent process
-		process.send('ready');
+		if (process.send) {
+			process.send('ready');
+		}
 	}
+
+	setInterval(() => {
+		clusterLogger.info(`memoryUsage(${workerType}:${process.pid}): ${JSON.stringify(process.memoryUsage())}`);
+	}, 5 * 60 * 1000);
 }
 
 const runningNodejsVersion = process.version.slice(1).split('.').map(x => parseInt(x, 10));

@@ -96,7 +96,7 @@ export default define(meta, async (ps, me) => {
 			}
 		}
 
-		if (user === null) {
+		if (user == null || user.isDeleted) {
 			throw new ApiError(meta.errors.noSuchUser);
 		}
 

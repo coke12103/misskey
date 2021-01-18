@@ -5,6 +5,7 @@
 		<p><fa icon="microchip"/>CPU</p>
 		<p>{{ meta.cpu.cores }} Logical cores</p>
 		<p>{{ meta.cpu.model }}</p>
+		<p>Current: {{ speed }}GHz</p>
 	</div>
 </div>
 </template>
@@ -20,7 +21,8 @@ export default Vue.extend({
 	props: ['connection', 'meta'],
 	data() {
 		return {
-			usage: 0
+			usage: 0,
+			speed: 0,
 		};
 	},
 	mounted() {
@@ -32,6 +34,7 @@ export default Vue.extend({
 	methods: {
 		onStats(stats) {
 			this.usage = stats.cpu_usage;
+			this.speed = stats.cpu_speed.toFixed(2);
 		}
 	}
 });

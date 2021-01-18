@@ -4,6 +4,7 @@
 		<p><b>Misskey</b><span>{{ meta.version }}</span></p>
 		<p><b>Machine</b><span>{{ meta.machine }}</span></p>
 		<p><b>OS</b><span>{{ meta.os }}</span></p>
+		<p><b>Arch</b><span>{{ meta.arch }}</span></p>
 		<p><b>Node</b><span>{{ meta.node }}</span></p>
 		<p>{{ $t('@.ai-chan-kawaii') }}</p>
 	</header>

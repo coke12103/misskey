@@ -19,6 +19,7 @@ import Favorite from '../../models/favorite';
 import DeliverManager, { deliverToFollowers } from '../../remote/activitypub/deliver-manager';
 import { deliverToRelays } from '../relay';
 import Notification from '../../models/notification';
+import { deleteUnusedFile } from '../drive/delete-unused-file';
 
 /**
  * 投稿を削除します。
@@ -84,6 +85,11 @@ export default async function(user: IUser, note: INote, quiet = false) {
 					'metadata.attachedNoteIds': note._id
 				}
 			});
+
+			// リモートユーザーの場合はもう参照されてないファイルか確認
+			if (isRemoteUser(user)) {
+				deleteUnusedFile(fileId);
+			}
 		}
 	}
 

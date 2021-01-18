@@ -1,11 +1,11 @@
-import { parseFragment, DefaultTreeDocumentFragment } from 'parse5';
+import { parseFragment } from 'parse5';
 import { URL } from 'url';
 import { urlRegexFull, urlRegex } from './prelude';
 
 export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 	if (html == null) return null;
 
-	const dom = parseFragment(html) as DefaultTreeDocumentFragment;
+	const dom = parseFragment(html);
 
 	let text = '';
 

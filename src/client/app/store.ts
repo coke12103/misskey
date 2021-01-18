@@ -76,6 +76,7 @@ const defaultDeviceSettings = Object.assign({
 	disableShowingAnimatedImages: true,
 	disableShowingInstanceInfo: false,
 	useAbsoluteTime: false,
+	enableKeyboardShortcutInNote: false,
 	expandUsersPhotos: true,
 	expandUsersActivity: true,
 	showPostPreview: true,

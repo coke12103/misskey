@@ -4,7 +4,7 @@
 	<div>
 		<p><fa icon="memory"/>Memory</p>
 		<p>Total: {{ total | bytes(1) }}</p>
-		<p>Used: {{ used | bytes(1) }}</p>
+		<p>Active: {{ active | bytes(1) }}</p>
 		<p>Free: {{ free | bytes(1) }}</p>
 	</div>
 </div>
@@ -24,6 +24,7 @@ export default Vue.extend({
 			usage: 0,
 			total: 0,
 			used: 0,
+			active: 0,
 			free: 0
 		};
 	},
@@ -35,10 +36,11 @@ export default Vue.extend({
 	},
 	methods: {
 		onStats(stats) {
-			stats.mem.free = stats.mem.total - stats.mem.used;
-			this.usage = stats.mem.used / stats.mem.total;
+			stats.mem.free = stats.mem.free;
+			this.usage = stats.mem.active / stats.mem.total;
 			this.total = stats.mem.total;
 			this.used = stats.mem.used;
+			this.active = stats.mem.active;
 			this.free = stats.mem.free;
 		}
 	}

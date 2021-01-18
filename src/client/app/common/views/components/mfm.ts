@@ -167,6 +167,37 @@ export default Vue.component('misskey-flavored-markdown', {
 							style = !this.$store.state.settings.disableAnimatedMfm ? 'animation: mfm-rgbshift 2s linear infinite;' : '';
 							break;
 						}
+						case 'x2': {
+							style = `font-size: 200%;`;
+							break;
+						}
+						case 'x3': {
+							style = `font-size: 400%;`;
+							break;
+						}
+						case 'x4': {
+							style = `font-size: 600%;`;
+							break;
+						}
+						case 'font': {
+							const family =
+								token.node.props.args.serif ? 'serif' :
+								token.node.props.args.monospace ? 'monospace' :
+								token.node.props.args.cursive ? 'cursive' :
+								token.node.props.args.fantasy ? 'fantasy' :
+								token.node.props.args.emoji ? 'emoji' :
+								token.node.props.args.math ? 'math' :
+								null;
+							if (family) style = `font-family: ${family};`;
+							break;
+						}
+						case 'blur': {
+							return [createElement('span', {
+								attrs: {
+									class: '_mfm_blur_'
+								}
+							}, genEl(token.children, inQuote))];
+						}
 					}
 
 					return (createElement as any)('span', {

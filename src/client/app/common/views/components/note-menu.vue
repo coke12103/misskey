@@ -22,83 +22,123 @@ export default Vue.extend({
 	},
 	computed: {
 		items(): any[] {
-			return [{
-				icon: faPaperPlane,
-				text: this.$t('air-reply'),
-				action: this.airReply
-			}, {
-				icon: 'at',
-				text: this.$t('mention'),
-				action: this.mention
-			}, null, {
-				icon: 'info-circle',
-				text: this.$t('detail'),
-				action: this.detail
-			}, {
-				icon: faPlaneArrival,
-				text: this.$t('go-timeline'),
-				action: this.goTimeline
-			}, {
-				icon: faPlaneDeparture,
-				text: this.$t('up-timeline'),
-				action: this.upTimeline
-			}, {
-				icon: faUserFriends,
-				text: this.$t('go-follow-tl'),
-				action: this.goFollowTL
-			}, {
-				icon: faCopy,
-				text: this.$t('copy-content'),
-				action: this.copyContent
-			}, {
-				icon: 'link',
-				text: this.$t('copy-link'),
-				action: this.copyLink
-			}, (this.note.url || this.note.uri) ? {
+			const it = [
+				// 空リプ
+				{
+					icon: faPaperPlane,
+					text: this.$t('air-reply'),
+					action: this.airReply
+				},
+				// メンション
+				{
+					icon: 'at',
+					text: this.$t('mention'),
+					action: this.mention
+				},
+				null,
+				// 詳細
+				{
+					icon: 'info-circle',
+					text: this.$t('detail'),
+					action: this.detail
+				},
+				// タイムラインへ
+				{
+					icon: faPlaneArrival,
+					text: this.$t('go-timeline'),
+					action: this.goTimeline
+				},
+				{
+					icon: faPlaneDeparture,
+					text: this.$t('up-timeline'),
+					action: this.upTimeline
+				},
+				{
+					icon: faUserFriends,
+					text: this.$t('go-follow-tl'),
+					action: this.goFollowTL
+				},
+				// コピー
+				{
+					icon: faCopy,
+					text: this.$t('copy-content'),
+					action: this.copyContent
+				},
+				{
+					icon: 'link',
+					text: this.$t('copy-link'),
+					action: this.copyLink
+				}
+			];
+
+			// リモートで見る
+			if (this.note.url || this.note.uri) it.push({
 				icon: 'external-link-square-alt',
 				text: this.$t('remote'),
 				action: () => {
 					window.open(this.note.url || this.note.uri, '_blank');
 				}
-			} : undefined,
-			null,
-			this.isFavorited ? {
-				icon: 'star',
-				text: this.$t('unfavorite'),
-				action: () => this.toggleFavorite(false)
-			} : {
-				icon: 'star',
-				text: this.$t('favorite'),
-				action: () => this.toggleFavorite(true)
-			},
-			this.note.userId == this.$store.state.i.id && (this.$store.state.i.pinnedNoteIds || []).includes(this.note.id) ? {
+			});
+
+			// お気に入り
+			if (this.isFavorited) {
+				it.push({
+					icon: 'star',
+					text: this.$t('unfavorite'),
+					action: () => this.toggleFavorite(false)
+				});
+			} else {
+				it.push({
+					icon: 'star',
+					text: this.$t('favorite'),
+					action: () => this.toggleFavorite(true)
+				});
+			}
+
+			// ピン留め
+			if (this.isSelf && (this.$store.state.i.pinnedNoteIds || []).includes(this.note.id)) it.push({
 				icon: 'thumbtack',
 				text: this.$t('unpin'),
 				action: () => this.togglePin(false)
-			} : undefined,
-			this.pinnable ? {
+			});
+
+			if (this.pinnable) it.push({
 				icon: 'thumbtack',
 				text: this.$t('pin'),
 				action: () => this.togglePin(true)
-			} : undefined,
-			...(this.note.userId == this.$store.state.i.id || this.$store.state.i.isAdmin || this.$store.state.i.isModerator ? [
-				null, {
-					icon: ['far', 'trash-alt'],
-					text: this.$t('delete'),
-					action: this.del
-				},
-				this.note.userId == this.$store.state.i.id ? {
+			});
+
+			if (this.isSelf || this.isAdminOrModerator) it.push(null);
+
+			// 編集
+			if (this.isSelf) {
+				it.push({
 					icon: ['fa', 'undo-alt'],
 					text: this.$t('@.edit'),
 					action: this.edit
-				} : undefined]
-				: []
-			)]
-			.filter(x => x !== undefined)
+				});
+			}
+
+			// 削除
+			if (this.isSelf || this.isAdminOrModerator) it.push({
+				icon: ['far', 'trash-alt'],
+				text: this.isSelf ? this.$t('delete') : this.$t('deleteAsAdmin'),
+				action: this.del
+			});
+
+			return it;
+		},
+
+		isSelf(): boolean {
+			return this.note.userId == this.$store.state.i.id;
+		},
+
+		isAdminOrModerator(): boolean {
+			return this.$store.state.i.isAdmin || this.$store.state.i.isModerator;
 		},
 
 		pinnable(): boolean {
-			return this.note.userId == this.$store.state.i.id
+			return this.isSelf
 				&& !(this.$store.state.i.pinnedNoteIds || []).includes(this.note.id)
 				&& (this.note.visibility == 'public' || this.note.visibility == 'home')
 				&& !this.note.localOnly;
@@ -165,7 +205,7 @@ export default Vue.extend({
 		del() {
 			this.$root.dialog({
 				type: 'warning',
-				text: this.$t('delete-confirm'),
+				text: this.isSelf ? this.$t('delete-confirm') : this.$t('deleteAsAdmin-confirm'),
 				showCancelButton: true
 			}).then(({ canceled }) => {
 				if (canceled) return;

@@ -93,4 +93,7 @@ const args = process.argv.slice(2);
 
 main(args[0]).then(() => {
 	console.log('Done');
+	setTimeout(() => {
+		process.exit(0);
+	}, 30 * 1000);
 });

@@ -19,13 +19,6 @@
 				@update:note="onNoteUpdated(i, $event)"
 				:compact="true"
 			/>
-			<p class="date" :key="note.id + '_date'" v-if="i != notes.length - 1 && note._date != _notes[i + 1]._date">
-				<span><fa icon="angle-up"/>{{ note._datetext }}</span>
-				<span><fa icon="angle-down"/>{{ _notes[i + 1]._datetext }}</span>
-			</p>
-			<p class="date" :key="note.id + '_hour'" v-if="i != notes.length - 1 && timeSplitters.includes(note._hour) && note._hour != _notes[i + 1]._hour">
-				<span>{{ note._hourtext }}</span>
-			</p>
 		</template>
 	</component>
 
@@ -75,16 +68,7 @@ export default Vue.extend({
 
 	computed: {
 		_notes(): any[] {
-			return (this.notes as any).map(note => {
-				const date = new Date(note.createdAt).getDate();
-				const month = new Date(note.createdAt).getMonth() + 1;
-				note._date = date;
-				note._datetext = this.$t('@.month-and-day').replace('{month}', month.toString()).replace('{day}', date.toString());
-				const hour = new Date(note.createdAt).getHours();
-				note._hour = hour;
-				note._hourtext = `${hour}:00`;
-				return note;
-			});
+			return (this.notes as any).filter(x => x.stayTl).concat((this.notes as any).filter(x => !x.stayTl));
 		}
 	},
 
@@ -182,7 +166,8 @@ export default Vue.extend({
 
 				// オーバーフローしたら古い投稿は捨てる
 				if (this.notes.length >= displayLimit) {
-					this.notes = this.notes.slice(0, displayLimit);
+					let i = 0;
+					this.notes = this.notes.filter(note => note.stayTl || i++ < displayLimit);
 					this.cursor = this.notes[this.notes.length - 1].id
 				}
 			} else {

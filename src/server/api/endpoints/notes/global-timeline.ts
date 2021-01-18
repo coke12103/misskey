@@ -58,6 +58,10 @@ export const meta = {
 			default: 10
 		},
 
+		minScore: {
+			validator: $.optional.num.min(1)
+		},
+
 		sinceId: {
 			validator: $.optional.type(ID),
 			transform: transform,
@@ -155,6 +159,10 @@ export default define(meta, async (ps, user) => {
 		if (ps.excludeSfw) {
 			query['_files.metadata.isSensitive'] = true;
 		}
+	}
+
+	if (ps.minScore) {
+		query.score = { $gte: ps.minScore };
 	}
 
 	if (ps.sinceId) {

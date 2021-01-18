@@ -5,6 +5,7 @@ import define from '../../define';
 import { createDeleteNotesJob, createDeleteDriveFilesJob } from '../../../../queue';
 import Message from '../../../../models/messaging-message';
 import Signin from '../../../../models/signin';
+import { doPostSuspend } from '../../../../services/suspend-user';
 
 export const meta = {
 	requireCredential: true,
@@ -47,6 +48,7 @@ export default define(meta, async (ps, user) => {
 	Signin.remove({ userId: user._id });
 	createDeleteNotesJob(user);
 	createDeleteDriveFilesJob(user);
+	doPostSuspend(user);
 
 	return;
 });

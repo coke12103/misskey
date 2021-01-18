@@ -36,7 +36,7 @@ export default Vue.extend({
 			this.$root.api('notes/show', {
 				noteId: this.$route.params.note
 			}).then(note => {
-				this.note = note;
+				if (this.$store.state.i || !note.user.host) this.note = note;
 			}).catch((e: any) => {
 				this.$root.dialog({
 					type: 'error',

@@ -132,6 +132,7 @@
 		<section>
 			<details>
 				<summary>{{ $t('danger-zone') }}</summary>
+				<ui-button @click="deleteAccount()">{{ $t('delete-account') }}</ui-button>
 				<ui-button v-if="!noFederation" @click="disableFederation()">{{ $t('disable-federation') }}</ui-button>
 				<ui-button v-if="noFederation" @click="enableFederation()">{{ $t('enable-federation') }}</ui-button>
 			</details>
@@ -491,12 +492,25 @@ export default Vue.extend({
 			});
 			if (canceled) return;
 
+			const { canceled: canceled2 } = await this.$root.dialog({
+				title: this.$t('delete-account-confirm'),
+				showCancelButton: true
+			});
+			if (canceled2) return;
+
 			this.$root.api('i/delete-account', {
 				password
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',
 					text: this.$t('account-deleted')
+				}).then(() => {
+					this.$root.signout();
+				});
+			}).catch((e: any) => {
+				this.$root.dialog({
+					type: 'error',
+					text: e.message
 				});
 			});
 		}

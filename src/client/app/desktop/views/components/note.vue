@@ -98,6 +98,7 @@
 				<button @click="menu()" ref="menuButton" class="button">
 					<fa icon="ellipsis-h"/>
 				</button>
+				<button class="button stayTl" :class="{ pinned: !!appearNote.stayTl }" @click="toggleStayTl"><fa icon="thumbtack"/></button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>
 		</div>
@@ -215,6 +216,11 @@ export default Vue.extend({
 				margin 0 10px 8px 0
 				width 42px
 				height 42px
+
+			> .main
+				> .footer
+					> .button
+						margin 0 10px 0 0
 
 	&:last-of-type
 		border-bottom none
@@ -405,6 +411,13 @@ export default Vue.extend({
 					&.inhibitedButton
 						cursor not-allowed
 
+					&.stayTl
+						opacity 0.7
+
+						&.pinned
+							opacity 1
+							color var(--primary)
+
 					> .count
 						display inline
 						margin 0 0 0 8px
@@ -417,5 +430,4 @@ export default Vue.extend({
 			> .deleted
 				color var(--noteText)
 				opacity 0.7
-
 </style>

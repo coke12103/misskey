@@ -11,9 +11,17 @@ import { getS3 } from './s3';
 import { InternalStorage } from './internal-storage';
 
 export default async function(file: IDriveFile, isExpired = false) {
-	const drive = getDriveConfig(file.metadata && file.metadata.uri != null);
+	if (file.metadata?.storage == 'minio') {
+		const drive = getDriveConfig(file.metadata.uri != null);
 
-	if (file.metadata.storage == 'minio') {
+		if (file.metadata.storageProps == null) {
+			throw 'file.metadata.storageProps is null';
+		}
+
+		if (drive.bucket == null) {
+			throw 'drive.bucket is null';
+		}
+
 		const s3 = getS3(drive);
 
 		// 後方互換性のため、file.metadata.storageProps.key があるかどうかチェックしています。
@@ -106,7 +114,7 @@ export default async function(file: IDriveFile, isExpired = false) {
 	// 統計を更新
 	driveChart.update(file, false);
 	perUserDriveChart.update(file, false);
-	if (isRemoteUser(file.metadata._user)) {
+	if (file.metadata && isRemoteUser(file.metadata._user)) {
 		instanceChart.updateDrive(file, false);
 		Instance.update({ host: file.metadata._user.host }, {
 			$inc: {
