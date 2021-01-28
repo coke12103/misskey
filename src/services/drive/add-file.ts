@@ -293,6 +293,7 @@ async function upload(key: string, stream: fs.ReadStream | Buffer, type: string,
 	} as S3.PutObjectRequest;
 
 	if (filename) params.ContentDisposition = contentDisposition('inline', filename);
+	if (drive.config?.setPublicRead) params.ACL = 'public-read';
 
 	const s3 = getS3(drive);
 

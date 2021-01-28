@@ -3,9 +3,11 @@ port: 8010
 
 mongodb:
   host: localhost
-  port: 27017
+  port: 57010
   db: test-misskey
 
 redis:
   host: localhost
   port: 6379
+
+# docker run --rm -p 57010:27017 --name mongotest mongo:4.4-bionic

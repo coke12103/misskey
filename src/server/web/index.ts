@@ -155,7 +155,12 @@ router.get(['/@:user', '/@:user/:sub'], async (ctx, next) => {
 		host
 	}) as ILocalUser;
 
-	if (user != null) {
+	if (user == null || user.isDeleted) {
+		ctx.status = 404;
+	} else if (user.isSuspended) {
+		// サスペンドユーザーのogは出さないがAPI経由でモデレータが閲覧できるように
+		await next();
+	} else {
 		const meta = await fetchMeta();
 		const builded = await buildMeta(meta, false);
 
@@ -175,13 +180,8 @@ router.get(['/@:user', '/@:user/:sub'], async (ctx, next) => {
 			iconType: config.icons?.favicon?.type,
 			appleTouchIcon: config.icons?.appleTouchIcon?.url,
 			noindex: user.host || user.avoidSearchIndex,
-			showRemote: !!config.showRemoteForAnon,
 		});
 		ctx.set('Cache-Control', 'public, max-age=60');
-	} else {
-		// リモートユーザーなので
-		// サスペンドユーザーのogは出さないがAPI経由でモデレータが閲覧できるように
-		await next();
 	}
 });
 
@@ -200,7 +200,7 @@ router.get('/users/:user', async ctx => {
 		host: null
 	});
 
-	if (user === null) {
+	if (user == null) {
 		ctx.status = 404;
 		return;
 	}
@@ -241,7 +241,6 @@ router.get('/notes/:note', async ctx => {
 				iconType: config.icons?.favicon?.type,
 				appleTouchIcon: config.icons?.appleTouchIcon?.url,
 				noindex: _note.user.host || _note.user.avoidSearchIndex,
-				showRemote: !!config.showRemoteForAnon,
 			});
 
 			if (['public', 'home'].includes(note.visibility)) {

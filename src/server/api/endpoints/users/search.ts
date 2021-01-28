@@ -105,7 +105,9 @@ export default define(meta, async (ps, me) => {
 			});
 
 			users = await User.find({
-				_id: { $in: usertags.map(x => x.targetId ) }
+				_id: { $in: usertags.map(x => x.targetId ) },
+				isDeleted: { $ne: true },
+				isSuspended: { $ne: true }
 			});
 		}
 
@@ -115,6 +117,7 @@ export default define(meta, async (ps, me) => {
 				.find({
 					host: null,
 					name: new RegExp('^' + escapeRegexp(name), 'i'),
+					isDeleted: { $ne: true },
 					isSuspended: { $ne: true }
 				}, {
 					limit: ps.limit,
@@ -129,6 +132,7 @@ export default define(meta, async (ps, me) => {
 				.find({
 					host: { $nin: hideHostsForRemote },
 					name: new RegExp('^' + escapeRegexp(name), 'i'),
+					isDeleted: { $ne: true },
 					isSuspended: { $ne: true }
 				}, {
 					limit: ps.limit - users.length
@@ -144,6 +148,7 @@ export default define(meta, async (ps, me) => {
 				.find({
 						host: { $nin: hideHosts },
 						usernameLower: ps.query.replace('@', '').toLowerCase(),
+						isDeleted: { $ne: true },
 						isSuspended: { $ne: true }
 					}, {
 						limit: ps.limit - users.length,
@@ -161,6 +166,7 @@ export default define(meta, async (ps, me) => {
 					_id: { $nin: ids },
 					host: null,
 					usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+					isDeleted: { $ne: true },
 					isSuspended: { $ne: true }
 				}, {
 					limit: ps.limit - users.length,
@@ -177,6 +183,7 @@ export default define(meta, async (ps, me) => {
 					_id: { $nin: ids },
 					host: { $nin: hideHostsForRemote },
 					usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+					isDeleted: { $ne: true },
 					isSuspended: { $ne: true }
 				}, {
 					limit: ps.limit - users.length,
@@ -190,6 +197,7 @@ export default define(meta, async (ps, me) => {
 		users = await User
 		.find({
 			host: isSelfHost(ps.query) ? null : toDbHost(ps.query.replace('@', '')),
+			isDeleted: { $ne: true },
 			isSuspended: { $ne: true }
 		}, {
 			limit: ps.limit - users.length

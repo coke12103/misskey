@@ -1,7 +1,10 @@
+<!-- Desktop user page の プロフィールより下の部分 -->
 <template>
 <div class="lnctpgve">
+	<!-- ピン留め投稿 -->
 	<mk-note-detail v-for="n in user.pinnedNotes" :key="n.id" :note="n" :compact="true"/>
 	<!--<mk-calendar @chosen="warp" :start="new Date(user.createdAt)"/>-->
+	<!-- Activityグラフ -->
 	<div class="activity">
 		<ui-container :body-togglable="true"
 			:expanded="$store.state.device.expandUsersActivity"
@@ -10,7 +13,11 @@
 			<x-activity :user="user" :limit="35" style="padding: 16px;"/>
 		</ui-container>
 	</div>
+	<!-- リアクション -->
+	<x-reactions :user="user"/>
+	<!-- フォト -->
 	<x-photos :user="user"/>
+	<!-- タイムライン -->
 	<x-timeline ref="tl" :user="user"/>
 </div>
 </template>
@@ -21,13 +28,15 @@ import i18n from '../../../../i18n';
 import XTimeline from './user.timeline.vue';
 import XPhotos from './user.photos.vue';
 import XActivity from '../../../../common/views/components/activity.vue';
+import XReactions from '../../../../common/views/components/user-reactions.vue';
 
 export default Vue.extend({
 	i18n: i18n(),
 	components: {
 		XTimeline,
 		XPhotos,
-		XActivity
+		XActivity,
+		XReactions,
 	},
 	props: {
 		user: {

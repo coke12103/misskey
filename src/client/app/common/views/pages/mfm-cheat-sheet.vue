@@ -197,7 +197,7 @@
 	<section>
 		<header>色ずれアニメーション</header>
 		<p><mfm :text="preview_rgbshift" :key="preview_rgbshift"/></p>
-		<ui-textarea :slim="false" class="text" v-model="preview_rgbshift"></ui-textarea>
+		<ui-textarea :slim="true" class="text" v-model="preview_rgbshift"></ui-textarea>
 	</section>
 
 	<section>
@@ -214,6 +214,24 @@
 		<ui-textarea :slim="false" class="text" v-model="preview_fnDelay"></ui-textarea>
 	</section>
 
+	<section>
+		<header>fn系拡大</header>
+		<p><mfm :text="preview_x" :key="preview_x"/></p>
+		<ui-textarea :slim="false" class="text" v-model="preview_x"></ui-textarea>
+	</section>
+
+	<section>
+		<header>fn系blur</header>
+		<p>ぼかしです、マウスオーバーで表示します。</p>
+		<p><mfm :text="preview_blur" :key="preview_blur"/></p>
+		<ui-textarea :slim="true" class="text" v-model="preview_blur"></ui-textarea>
+	</section>
+
+	<section>
+		<header>fn系font</header>
+		<p><mfm :text="preview_font" :key="preview_font"/></p>
+		<ui-textarea :slim="true" class="text" v-model="preview_font"></ui-textarea>
+	</section>
 </ui-card>
 
 </template>
@@ -265,6 +283,9 @@ export default Vue.extend({
 			preview_fnSpeed: '[spin.y,left,speed=1s あいう]\n[spin.y,left,speed=2s あいう]\n[spin.y,left,speed=3s あいう]',
 			preview_fnDelay: '[spin.y,left,speed=1s,delay=0.1s あいう]\n[spin.y,left,speed=1s,delay=0.2s あいう]\n[spin.y,left,speed=1s,delay=0.3s あいう]',
 			preview_rgbshift: '[rgbshift 色ずれアニメーション効果です]',
+			preview_x: '[x2 あいう]\n[x3 あいう]\n[x4 あいう]',
+			preview_blur: '[blur あいう]',
+			preview_font: '[font.serif serif]\n[font.monospace monospace]',
 
 			faQuestionCircle
 		};

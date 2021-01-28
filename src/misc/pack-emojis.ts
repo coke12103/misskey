@@ -27,7 +27,7 @@ const SELF_HOST: string = null;
  * @param ownerHost 投稿またはプロフィール所有者のホスト
  * @param reactionEmojis リアクションの絵文字名一覧
  */
-export async function packEmojis(emojis: string[], ownerHost: string, reactionEmojis = [] as string[]) {
+export async function packEmojis(emojis: string[], ownerHost: string | null, reactionEmojis = [] as string[]) {
 	const [custom, avatar] = await Promise.all([
 		packCustomEmojis(emojis, ownerHost, true, reactionEmojis),
 		packAvatarEmojis(emojis, ownerHost, true)
@@ -42,7 +42,7 @@ export async function packEmojis(emojis: string[], ownerHost: string, reactionEm
  * @param host 投稿またはプロフィール所有者のホスト
  * @param foreign 外部ホスト指定を許可する
  */
-export async function packAvatarEmojis(emojis: string[], ownerHost: string, foreign: boolean): Promise<IREmoji[]> {
+export async function packAvatarEmojis(emojis: string[], ownerHost: string | null, foreign: boolean): Promise<IREmoji[]> {
 	const avatarKeys = emojis
 		.map(name => {
 			const match = foreign ? name.match(/^@([\w-]+)(?:@([\w.-]+))?$/) : name.match(/^@([\w-]+)$/);
@@ -87,7 +87,7 @@ export async function packAvatarEmojis(emojis: string[], ownerHost: string, fore
  * @param host 投稿またはプロフィール所有者のホスト
  * @param foreign 外部ホスト指定を許可する
  */
-export async function packCustomEmojis(emojis: string[], ownerHost: string, foreign: boolean, reactionEmojis = [] as string[]): Promise<IREmoji[]> {
+export async function packCustomEmojis(emojis: string[], ownerHost: string | null, foreign: boolean, reactionEmojis = [] as string[]): Promise<IREmoji[]> {
 	const customKeys = emojis
 		.map(name => {
 			const match = foreign ? name.match(/^(\w+)(?:@([\w.-]+))?$/) : name.match(/^(\w+)$/);

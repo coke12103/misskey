@@ -291,9 +291,12 @@ export default Vue.extend({
 		},
 
 		twemojiUrl(): string {
+			// 合字をサロゲートペア単位で分割
 			let codes: string[] = Array.from(this.char).map(x => x.codePointAt(0).toString(16));
 			codes = codes.filter(x => x && x.length);
+			// 200d(joiner) を含まない場合は 最後の fe0f (絵文字セレクタを削除する)
 			if (!codes.includes('200d')) codes = codes.filter(x => x != 'fe0f');
+			// 参照先はTwemoji CDN
 			return `${twemojiSvgBase}/${codes.join('-')}.svg`;
 		}
 	},
@@ -333,27 +336,36 @@ export default Vue.extend({
 		if (this.char) {
 			const flavor = this.$store.state.device.emojiFlavor;
 
+			// 合字をサロゲートペア単位で分割
 			let codes: string[] = Array.from(this.char).map(x => x.codePointAt(0).toString(16));
 			codes = codes.filter(x => x && x.length);
 
-			// Vendor (OS, Browser) 
+			// ローカル定義Twemoji
 			if (this.local) {
+				// Twemojiライクに、200d(joiner) を含まない場合は 最後の fe0f (絵文字セレクタを削除する)
 				if (!codes.includes('200d')) codes = codes.filter(x => x != 'fe0f');
+				// で、参照先はTwemoji CDNじゃなくてローカル
 				this.url = `/assets/emojis/${codes.join('-')}.svg`;
 				return;
 			}
 
+			// 絵文字フレーバー
 			if (flavor === 'google' || flavor === 'apple' || flavor === 'facebook') {
 				const emojiDataVersion = '6.0.0';
+				// こちらもTwemojiライクに、200d(joiner) を含まない場合は 最後の fe0f (絵文字セレクタを削除する)
 				if (!codes.includes('200d')) codes = codes.filter(x => x != 'fe0f');
+				// emoji-datasourceの場合、最小4桁で0パディングする必要がある (eg: 0001->ffff->10000)
 				codes = codes.map(x => x.length < 4 ? ('000' + x).slice(-4) : x);
 				let b = `${codes.join('-')}`;
+				// でもなんか例外があるので修正
 				if (tw2full[b]) b = tw2full[b];
 				this.url = `https://cdnjs.cloudflare.com/ajax/libs/emoji-datasource-${flavor}/${emojiDataVersion}/img/${flavor}/64/${b}.png`;
+				// Twemojiにあるけど他のフレーバーにないものがあって、クライアントで全マップ持つのもあれでごく少数なので、fallbackで済ます。
 				this.fallbackUrl = this.twemojiUrl;
 				return;
 			}
 
+			// デフォルトはtwitter
 			this.url = this.twemojiUrl;
 		}
 	},

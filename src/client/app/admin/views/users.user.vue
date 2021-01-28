@@ -1,13 +1,13 @@
 <template>
 <div class="kofvwchc">
 	<div>
-		<a :href="user | userPage(null, true)">
+		<a :href="user | userPage(null, true)" :key="Math.random()">
 			<mk-avatar class="avatar" :user="user" :disable-link="true"/>
 		</a>
 	</div>
 	<div @click="click(user.id)">
 		<header>
-			<b><mk-user-name :user="user"/></b>
+			<b><mk-user-name :key="Math.random()" :user="user"/></b>
 			<span class="username">@{{ user | acct }}</span>
 			<span class="is-admin" v-if="user.isAdmin">admin</span>
 			<span class="is-moderator" v-if="user.isModerator">moderator</span>

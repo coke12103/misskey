@@ -133,6 +133,7 @@ init((launch, os) => {
 					{ path: '/featured', name: 'featured', component: () => import('../common/views/deck/deck.featured-column.vue').then(m => m.default) },
 					{ path: '/explore', name: 'explore', component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
 					{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('../common/views/deck/deck.explore-column.vue').then(m => m.default) },
+					{ path: '/about', name: 'about', component: () => import('../common/views/deck/deck.about-column.vue').then(m => m.default) },
 					{ path: '/i/favorites', component: () => import('../common/views/deck/deck.favorites-column.vue').then(m => m.default) },
 					{ path: '/i/reactions', component: () => import('../common/views/deck/deck.reactions-column.vue').then(m => m.default) },
 					{ path: '/i/pages', name: 'pages', component: () => import('../common/views/pages/pages.vue').then(m => m.default) },
@@ -164,6 +165,7 @@ init((launch, os) => {
 			{ path: '/featured', name: 'featured', component: () => import('./views/pages/featured.vue').then(m => m.default) },
 			{ path: '/explore', name: 'explore', component: () => import('./views/pages/explore.vue').then(m => m.default) },
 			{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('./views/pages/explore.vue').then(m => m.default) },
+			{ path: '/about', name: 'about', component: () => import('./views/pages/about.vue').then(m => m.default) },
 			{ path: '/share', component: MkShare },
 			{ path: '/games/reversi/:game?', name: 'reversi', component: MkReversi },
 			{ path: '/@:user', name: 'user', component: () => import('./views/pages/user/index.vue').then(m => m.default), children: [

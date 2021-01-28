@@ -90,6 +90,9 @@ common:
   mobile-mode: 'Mobile mode'
   empty: 'Empty'
   edit: 'Edit'
+  aboutInstance: "About this instance"
+  favoriteReactions: "Favorite reactions"
+
   favorites: "Favorites"
   noteReactions: "Reacted notes"
   poll_finished: "Poll finished"
@@ -443,6 +446,17 @@ common/views/pages/explore.vue:
   explore-fediverse: "Explore fediverse"
   users-info: "Currently, {users} users are registered here"
   searchUser: "Search user"
+common/views/pages/about.vue:
+  about: "About {host}"
+  basic: "Basic"
+  maintainerName: "Administrator"
+  maintainerEmail: "Contanct"
+  stats: "Statistics"
+  users: "Users"
+  notes: "Posts"
+  instances: "Instances"
+  popularReactions: "Popular reactions"
+
 common/views/components/url-preview.vue:
   enable-player: "Enable playback"
   disable-player: "Close the player"
@@ -694,6 +708,11 @@ common/views/components/poll-editor.vue:
   day: "Days"
 common/views/components/reaction-picker.vue:
   choose-reaction: "Send a reaction"
+  emoji: "Emoji"
+  react: "React"
+  pick: "Pick emoji"
+  random: "Random"
+
 common/views/components/emoji-picker.vue:
   pinned: "Keep picker open"
   search: "Search Emoji"

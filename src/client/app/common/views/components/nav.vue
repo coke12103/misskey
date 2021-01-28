@@ -2,6 +2,8 @@
 <span class="mk-nav">
 	<a :href="aboutUrl">{{ $t('about') }}</a>
 	<i>・</i>
+	<router-link to="/about">{{ $t('@.aboutInstance') }}</router-link>
+	<i>・</i>
 	<a :href="repositoryUrl" rel="noopener" target="_blank">{{ $t('repository') }}</a>
 	<i>・</i>
 	<a :href="feedbackUrl" rel="noopener" target="_blank">{{ $t('feedback') }}</a>

@@ -5,10 +5,12 @@ import config from '../config';
 import User, { IUser, isLocalUser } from '../models/user';
 import Following from '../models/following';
 import deleteFollowing from '../services/following/delete';
+import rejectFollowing from '../services/following/requests/reject';
 
 export async function doPostSuspend(user: IUser) {
-	await sendDeleteActivity(user).catch(() => {});
 	await unFollowAll(user).catch(() => {});
+	await rejectFollowAll(user).catch(() => {});
+	await sendDeleteActivity(user).catch(() => {});
 }
 
 export async function sendDeleteActivity(user: IUser) {
@@ -55,5 +57,23 @@ async function unFollowAll(follower: IUser) {
 		}
 
 		await deleteFollowing(follower, followee, true);
+	}
+}
+
+async function rejectFollowAll(followee: IUser) {
+	const followings = await Following.find({
+		followeeId: followee._id
+	});
+
+	for (const following of followings) {
+		const follower = await User.findOne({
+			_id: following.followerId
+		});
+
+		if (follower == null) {
+			continue;
+		}
+
+		await rejectFollowing(followee, follower);
 	}
 }

@@ -9,30 +9,27 @@ block title
 	= `${title} | ${instanceName}`
 
 block desc
-	if !user.host || showRemote
-		meta(name='description' content= user.description)
+	meta(name='description' content= user.description)
 
 block og
-	if !user.host || showRemote
-		meta(property='og:type'        content='blog')
-		meta(property='og:title'       content= title)
-		meta(property='og:description' content= user.description)
-		meta(property='og:url'         content= url)
-		meta(property='og:image'       content= img)
+	meta(property='og:type'        content='blog')
+	meta(property='og:title'       content= title)
+	meta(property='og:description' content= user.description)
+	meta(property='og:url'         content= url)
+	meta(property='og:image'       content= img)
 
 block meta
-	if !user.host || showRemote
-		meta(name='misskey:user-username' content=user.username)
-		meta(name='misskey:user-id' content=user._id)
+	meta(name='misskey:user-username' content=user.username)
+	meta(name='misskey:user-id' content=user._id)
 
-		meta(name='twitter:card' content='summary')
+	meta(name='twitter:card' content='summary')
 
 	if !sub
-		if (!user.host || showRemote)
+		if !user.host
 			link(rel='alternate' href=`${config.url}/users/${user._id}` type='application/activity+json')
-		if (!user.host || showRemote) && user.uri
+		if user.uri
 			link(rel='alternate' href=user.uri type='application/activity+json')
-		if (!user.host || showRemote) && user.url
+		if user.url
 			link(rel='alternate' href=user.url type='text/html')
 		if !user.host
 			link(rel='alternate' href=`${url}.atom` type='application/atom+xml')

@@ -105,6 +105,8 @@ common:
   mobile-mode: 'モバイル版'
   empty: 'ありません！'
   edit: '編集'
+  aboutInstance: "このインスタンスについて"
+  favoriteReactions: "よく使うリアクション"
 
   favorites: "お気に入り"
   noteReactions: "リアクションした投稿"
@@ -484,6 +486,17 @@ common/views/pages/explore.vue:
   users-info: "現在{users}ユーザーが登録されています"
   searchUser: "ユーザーを検索"
 
+common/views/pages/about.vue:
+  about: "{host} について"
+  basic: "基本"
+  maintainerName: "管理者"
+  maintainerEmail: "連絡先"
+  stats: "統計"
+  users: "ユーザー数"
+  notes: "投稿数"
+  instances: "インスタンス数"
+  popularReactions: "人気のリアクション"
+
 common/views/components/url-preview.vue:
   enable-player: "プレイヤーを開く"
   disable-player: "プレイヤーを閉じる"
@@ -755,6 +768,10 @@ common/views/components/poll-editor.vue:
 
 common/views/components/reaction-picker.vue:
   choose-reaction: "リアクションを選択"
+  emoji: "絵文字"
+  react: "リアクション"
+  pick: "絵文字を選択"
+  random: "ランダム"
 
 common/views/components/emoji-picker.vue:
   pinned: "ピッカーを開いたままにする"
@@ -1995,6 +2012,7 @@ mobile/views/components/ui.nav.vue:
   game: "ゲーム"
   admin: "管理"
   about: "Misskeyについて"
+  aboutInstance: "このインスタンスについて"
   mark-all-as-read: "全て既読にする"
 
 mobile/views/components/user-timeline.vue:

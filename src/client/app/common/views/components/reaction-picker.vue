@@ -6,10 +6,10 @@
 			<button v-for="(reaction, i) in rs" :key="i" @click="react(reaction)" :tabindex="i + 1" :title="/^[a-z]+$/.test(reaction) ? $t('@.reactions.' + reaction) : reaction" v-particle><mk-reaction-icon :reaction="reaction"/></button>
 		</div>
 		<div class="text">
-			<input v-model="text" placeholder="Emoji" @keyup.enter="reactText" @keydown.esc="close" @input="tryReactText" v-autocomplete="{ model: 'text', noZwsp: true }" ref="text">
-			<button title="OK" @click="reactText"><fa icon="check"/></button>
-			<button title="Pick" class="emoji" @click="emoji" ref="emoji"><fa :icon="['far', 'laugh']"/></button>
-			<button title="Random" @click="reactRandom()"><fa :icon="faRandom"/></button>
+			<input v-model="text" :placeholder="$t('emoji')" @keyup.enter="reactText" @keydown.esc="close" @input="tryReactText" v-autocomplete="{ model: 'text', noZwsp: true }" ref="text">
+			<button :title="$t('react')" @click="reactText"><fa icon="check"/></button>
+			<button :title="$t('pick')" class="emoji" @click="emoji" ref="emoji"><fa :icon="['far', 'laugh']"/></button>
+			<button :title="$t('random')" @click="reactRandom()"><fa :icon="faRandom"/></button>
 			<button title="Dislike" class="dislike" v-if="$store.state.device.showDislikeInPicker" :class="{ disliked }" @click="toggleDisliked()"><fa :icon="disliked ? faThumbsDown : faThumbsUp"/></button>
 		</div>
 	</div>

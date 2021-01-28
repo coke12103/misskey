@@ -79,6 +79,7 @@ const defaultDeviceSettings = Object.assign({
 	enableKeyboardShortcutInNote: false,
 	expandUsersPhotos: true,
 	expandUsersActivity: true,
+	expandUsersReactions: true,
 	showPostPreview: true,
 	enableMobileQuickNotificationView: false,
 	roomGraphicsQuality: 'medium',

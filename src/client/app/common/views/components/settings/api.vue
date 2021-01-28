@@ -41,7 +41,7 @@ export default Vue.extend({
 
 	data() {
 		return {
-			endpoint: 'meta',
+			endpoint: 'ping',
 			body: '{}',
 			res: null,
 			resTime: 0,

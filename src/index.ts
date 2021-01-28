@@ -68,7 +68,7 @@ function main() {
 				queueStats();
 			}
 
-			workerMain().then(() => {
+			workerMain(config).then(() => {
 				bootLogger.succ(`Now listening on port ${config.port} on ${config.url}`, undefined, true);
 
 				// ユニットテストから起動された場合用
@@ -96,12 +96,12 @@ function main() {
 			})
 		});
 	} else {
-		workerMain();
+		workerMain(config);
 	}
 }
 
 function greet(config: Config) {
-	if (!program.quiet) {
+	if (!program.quiet && process.env.NODE_ENV !== 'test') {
 		//#region Misskey logo
 		const v = `v${config.version}`;
 		console.log('  _____ _         _           ');
@@ -147,7 +147,7 @@ async function masterMain(config: Config) {
 /**
  * Init worker process
  */
-async function workerMain() {
+async function workerMain(config: Config) {
 	const workerType = process.env.WORKER_TYPE;
 
 	if (workerType === 'server') {
@@ -169,6 +169,22 @@ async function workerMain() {
 	setInterval(() => {
 		clusterLogger.info(`memoryUsage(${workerType}:${process.pid}): ${JSON.stringify(process.memoryUsage())}`);
 	}, 5 * 60 * 1000);
+
+	setInterval(() => {
+		const restartMin =
+			workerType === 'server' ? config.workerStrategies?.serverWorkerRestartMin :
+			workerType === 'queue' ? config.workerStrategies?.queueWorkerRestartMin :
+			config.workerStrategies?.workerWorkerRestartMin;
+
+		if (restartMin && restartMin > 0) {
+			const uptimeMin = process.uptime() / 60;
+
+			if (uptimeMin > restartMin) {
+				clusterLogger.info(`${workerType} ${process.pid}: uptime limit exceeded ${uptimeMin.toFixed(2)} > ${restartMin}, exiting.`);
+				process.exit(0);
+			}
+		}
+	}, 60 * 1000);
 }
 
 const runningNodejsVersion = process.version.slice(1).split('.').map(x => parseInt(x, 10));

@@ -63,6 +63,10 @@ html
 				text-align: center;
 			}
 
+			.emoji {
+				height: 2em;
+			}
+
 	body
 		main
 			header
@@ -121,7 +125,7 @@ html
 					th Emojis
 					td
 						each emoji in emojis
-							| :#{emoji.name}:
+							img(src=emoji.url alt=`:${emoji.name}:` class='emoji')
 							= ' '
 			footer
-				p Misskey is open-source software. <a href="https://github.com/syuilo/misskey">View source</a>
+				p Misskey is open-source software. <a href="https://github.com/mei23/misskey">View source</a>

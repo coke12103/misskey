@@ -31,14 +31,16 @@ drive:
 
 #drive:
 #  storage: 'minio'
-#  bucket:
-#  prefix:
+#  bucket: <bucket>
+#  prefix: <prefix>
 #  config:
-#    endPoint:
-#    region
+#    endPoint: <endPoint>
+#    region: <region>
 #    useSSL: true
-#    accessKey:
-#    secretKey:
+#    accessKey: <accessKey>
+#    secretKey: <secretKey>
+#    setPublicRead: false
+#    s3ForcePathStyle: true
 #
 # * endPoint
 #     S3: Leave empty
@@ -55,6 +57,11 @@ drive:
 #     S3: https://<bucket>.s3.amazonaws.com
 #     GCS: https://storage.googleapis.com/<bucket>
 #     Other services: https://s3.example.com/<bucket>
+#
+# * setPublicRead
+#     Set to true to set 'public-read' to the file (default: false)
+#
+# * s3ForcePathStyle (default: true, ただしendPointを省略した場合は常にfalse)
 
 # If defined, store remote files in another location
 # remoteDrive:
@@ -121,18 +128,24 @@ themeColor: '#fb4e4e'
 # Whether disable HSTS
 #disableHsts: true
 
-# 各Workerの数
+# 各Workerの設定
 # workerWorkerCount: server+queue両方を処理するworkerの数
 # serverWorkerCount: server処理のみをするworkerの数
 # queueWorkerCount: queue処理のみをするworkerの数
 # 稼働するのに必要な処理はserverとqueueの処理です
 # デフォルト(0:0:0)では、1つのmaster processが上がりそれに全ての処理が含まれるようになります
 # 0:1:1 にすると master(実処理は含まない), server(server処理を含む), queue(queueの処理を含む) の3つのプロセスが上がります
+# workerWorkerRestartMin: workerを自動で再起動する間隔 (分)
+# serverWorkerRestartMin: serverを自動で再起動する間隔 (分)
+# queueWorkerRestartMin: queueを自動で再起動する間隔 (分)
+
 #workerStrategies:
 #  workerWorkerCount: 0
 #  serverWorkerCount: 0
 #  queueWorkerCount: 0
-
+#  workerWorkerRestartMin: -1
+#  serverWorkerRestartMin: -1
+#  queueWorkerRestartMin: -1
 
 # IP address family used for outgoing request (ipv4, ipv6 or dual)
 #outgoingAddressFamily: ipv4
@@ -161,6 +174,3 @@ themeColor: '#fb4e4e'
 
 # サーバー情報を隠す (default: false)
 #hideServerInfo: true
-
-# 未認証ログインユーザーに対してリモートユーザーのコンテンツを表示する (default: false)
-#showRemoteForAnon: true
